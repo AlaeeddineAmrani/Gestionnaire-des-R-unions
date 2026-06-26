@@ -1,0 +1,18 @@
+<div class="auth-page">
+    <div class="form-container">
+        <h2 class="title">Se Connecter</h2>
+        <form action="#" method="POST">
+            <div class="input-group">
+                <input type="email" name="email" required placeholder="Adresse Email" [(ngModel)]="email">
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="mot_de_passe" required placeholder="Mot de Passe" [(ngModel)]="mot_de_passe">
+            </div>
+
+            <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+            <button type="button" class="submit-btn" (click)="onSubmit()">Se Connecter</button>
+        </form>
+    </div>
+</div>

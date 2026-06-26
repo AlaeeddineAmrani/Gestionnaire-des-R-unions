@@ -1,0 +1,24 @@
+<div class="add-reunion-page">
+    <div class="form-container">
+        <h2 class="title">Créer une Réunion</h2> 
+        <form>
+            <div class="input-group">
+                <input type="text" name="titre" required placeholder="Titre" [(ngModel)]="titre">
+            </div>
+            <div class="input-group">
+                <input type="date" name="date_reunion" required [(ngModel)]="date_reunion">
+            </div>
+            <div class="input-group">
+                <input type="time" name="heure_debut" required [(ngModel)]="heure_debut">
+            </div>
+            <div class="input-group">
+                <input type="time" name="heure_fin_prevue" required [(ngModel)]="heure_fin_prevue">
+            </div>
+            <div class="input-group">
+                <input type="number" name="id_salle" required placeholder="ID de la Salle (ex: 3)" [(ngModel)]="id_salle">
+            </div>
+
+            <button type="button" class="submit-btn" (click)="onSubmit()">Enregistrer la Réunion</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="add-user-page">
+    <div class="form-container">
+        <h2 class="title">Créer une Réunion</h2> 
+        <form>
+            <div class="input-group">
+                <input type="text" name="nom" required placeholder="Nom" [(ngModel)]="nom">
+            </div>
+            <div class="input-group">
+                <input type="text" name="prenom" required placeholder="Prénom" [(ngModel)]="prenom">
+            </div>
+            <div class="input-group">
+                <input type="email" name="email" required placeholder="Adresse email" [(ngModel)]="email">
+            </div>
+            <div class="input-group">
+                <input type="password" name="mot_de_passe" required placeholder="Mot de passe" [(ngModel)]="mot_de_passe">
+            </div>
+            <div class="input-group">
+                <select name="" id="selection" >
+                    <option value="" name="role">
+                        Choisir le Role
+                    </option>
+                    <option value="" name="admin" [(ngModel)]="admin">
+                        Admin
+                    </option>
+                    <option value="" name="user" [(ngModel)]="user">
+                        User
+                    </option>
+                </select> 
+            </div>
+            <div class="input-group">
+                <input type="number" name="id_service" required placeholder="ID du service" [(ngModel)]="id_service">
+            </div>
+
+            <button type="button" class="submit-btn" (click)="onSubmit()">Enregistrer la Réunion</button>
+        </form>
+    </div>
+</div>

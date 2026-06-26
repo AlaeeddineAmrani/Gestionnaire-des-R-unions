@@ -1,0 +1,131 @@
+/* --- Conteneur Principal --- */
+.reunion-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7f6; /* Fond très légèrement grisé pour faire ressortir les cartes blanches */
+  min-height: 100vh;
+}
+
+.reunion-list-container h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 3rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- La Grille (Magie du Responsive) --- */
+.cards-grid {
+  display: grid;
+  /* Crée des colonnes d'au moins 320px, et remplit l'espace vide automatiquement */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* --- Le Design des Cartes --- */
+.reunion-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 1.8rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  /* Ligne d'accentuation en haut (rappel de ton bouton de login) */
+  border-top: 5px solid #d49a2a; 
+  
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Animation au survol --- */
+.reunion-card:hover {
+  transform: translateY(-7px); /* Fait "décoller" la carte */
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Typographie à l'intérieur de la carte --- */
+.reunion-card h3 {
+  margin-top: 0;
+  color: #1a252f;
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.4;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.8rem;
+}
+
+.reunion-card p {
+  margin: 0.6rem 0;
+  color: #555;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between; /* Pousse le label à gauche et la valeur à droite */
+  align-items: center;
+}
+
+.reunion-card strong {
+  color: #34495e;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- Styles pour les statuts de chargement et d'erreur --- */
+.error {
+  color: #d27b2f;
+  background-color: #fce8e6;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: bold;
+}
+
+.reunion-list-container > div:not(.cards-grid):not(.error) {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  padding: 2rem;
+}
+
+/* --- Zone d'actions --- */
+.card-actions {
+  margin-top: auto; /* Pousse les boutons tout en bas de la carte */
+  padding-top: 1.2rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 1rem;
+}
+
+.card-actions button {
+  flex: 1; /* Les boutons prennent la même largeur */
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-edit {
+  background-color: #e8f4fd;
+  color: #2980b9;
+}
+
+.btn-edit:hover {
+  background-color: #d6eaf8;
+}
+
+.btn-delete {
+  background-color: #fce8e6;
+  color: #c0392b;
+}
+
+.btn-delete:hover {
+  background-color: #fadbd8;
+}

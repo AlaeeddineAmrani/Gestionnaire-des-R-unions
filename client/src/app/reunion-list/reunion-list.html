@@ -1,0 +1,32 @@
+<div class="reunion-list-container">
+  <h2>Liste des Réunions</h2>
+
+  <div *ngIf="isLoading">Chargement des réunions en cours...</div>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <div *ngIf="!isLoading && reunions.length === 0">
+    Aucune réunion prévue.
+  </div>
+
+  <div class="cards-grid" *ngIf="!isLoading && reunions.length > 0">
+    
+    @for (reunion of reunions; track reunion.id_reunion) {
+      <div class="reunion-card">
+        <h3>{{ reunion.titre }}</h3>
+        <p><strong>Date :</strong> {{ reunion.date_reunion | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Horaires :</strong> {{ reunion.heure_debut }} - {{ reunion.heure_fin_prevue }}</p>
+        <p><strong>Salle N° :</strong> {{ reunion.id_salle }}</p>
+        
+        <div class="card-actions">
+          <button class="btn-edit" (click)="onEdit(reunion.id_reunion)">
+            Modifier
+          </button>
+          <button class="btn-delete" (click)="onDelete(reunion.id_reunion)">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

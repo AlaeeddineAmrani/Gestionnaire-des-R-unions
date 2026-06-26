@@ -1,0 +1,89 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.add-reunion-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../../assets/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+
+/* On élargit un peu le conteneur blanc pour laisser respirer les deux colonnes */
+.form-container {
+  width: 60%; /* ou max-width: 800px; */
+  margin: 0 auto;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.95); /* Un peu plus opaque pour la lisibilité */
+  border-radius: 10px;
+}
+
+/* La magie de la grille ici */
+.form-container form {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Deux colonnes de largeur égale (1 fraction chacune) */
+  column-gap: 20px; /* Espace vertical entre la colonne de gauche et droite */
+  row-gap: 15px;    /* Espace horizontal entre les lignes */
+}
+
+/* On force le champ "Fichier" et le bouton à prendre toute la largeur (les 2 colonnes) */
+/* nth-last-child(2) cible l'avant-dernier élément (ton input file) */
+.form-container form .input-group:nth-last-child(2),
+.form-container form .submit-btn {
+  grid-column: span 2; 
+}
+
+/* Ajustement si tes inputs avaient une marge par défaut */
+.input-group {
+  margin-bottom: 0; 
+}
+
+.title{
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    color: #e9a112;
+    font-size: 28px;
+}
+
+.input-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.submit-btn{
+    background-color: #e9a112;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.submit-btn:hover{
+    background-color: #d27b2f;
+}
+
+input[type="text"], input[type="time"], input[type="date"], input[type="number"]{
+    padding: 10px;
+    border: 1px solid #e9a112;
+    border-radius: 3px;
+}
+
+input[type="text"]:focus, input[type="time"]:focus, input[type="date"]:focus, input[type="number"]:focus{
+    border-color: #d2912f;
+    border-width: 2px;
+    outline: none;
+}

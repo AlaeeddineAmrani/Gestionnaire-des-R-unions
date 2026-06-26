@@ -1,0 +1,74 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.auth-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../../assets/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.form-container{
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+    width: 30%;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.form-container:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.title{
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    color: #e9a112;
+    font-size: 28px;
+}
+
+.input-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.submit-btn{
+    background-color: #e9a112;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.submit-btn:hover{
+    background-color: #d27b2f;
+}
+
+input[type="email"], input[type="password"]{
+    padding: 10px;
+    border: 1px solid #e9a112;
+    border-radius: 3px;
+}
+
+input[type="email"]:focus, input[type="password"]:focus{
+    border-color: #d2912f;
+    border-width: 2px;
+    outline: none;
+}

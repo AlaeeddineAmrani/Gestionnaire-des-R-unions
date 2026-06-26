@@ -1,0 +1,44 @@
+<div class="add-reunion-page">
+    <div class="form-container">
+        <h2 class="title">Modifier la Réunion</h2>
+        <form>
+            <div class="input-group">
+                <label>Titre de la réunion</label>
+                <input type="text" name="titre" required [(ngModel)]="titre">
+            </div>
+
+            <div class="input-group">
+                <label>Date de la réunion</label>
+                <input type="date" name="date_reunion" required [min]="minDate" [(ngModel)]="date_reunion">
+            </div>
+
+            <div class="input-group">
+                <label>Heure de début</label>
+                <input type="time" name="heure_debut" required [(ngModel)]="heure_debut">
+            </div>
+
+            <div class="input-group">
+                <label>Heure de fin prévue</label>
+                <input type="time" name="heure_fin_prevue" required [(ngModel)]="heure_fin_prevue">
+            </div>
+
+            <div class="input-group">
+                <label>Heure de fin réelle</label>
+                <input type="time" name="heure_fin_reelle" [(ngModel)]="heure_fin_reelle">
+            </div>
+
+            <div class="input-group">
+                <label>ID de la Salle</label>
+                <input type="number" name="id_salle" required [(ngModel)]="id_salle">
+            </div>
+
+            <div class="input-group">
+                <label>Importer le PV / Rapport (PDF, DOCX...)</label>
+                <input type="file" name="pv_rapport" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)">
+                <small *ngIf="fichierExistant">Un fichier est déjà associé à cette réunion.</small>
+            </div>
+
+            <button type="button" class="submit-btn" (click)="onSubmit()">Mettre à jour</button>
+        </form>
+    </div>
+</div>
