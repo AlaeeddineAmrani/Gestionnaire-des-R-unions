@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditReunion } from './edit-reunion';
+import { EditReunionComponent } from './edit-reunion';
 
-describe('EditReunion', () => {
-  let component: EditReunion;
-  let fixture: ComponentFixture<EditReunion>;
+describe('EditReunionComponent', () => {
+  let component: EditReunionComponent;
+  let fixture: ComponentFixture<EditReunionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditReunion],
+      imports: [EditReunionComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(EditReunion);
+    fixture = TestBed.createComponent(EditReunionComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

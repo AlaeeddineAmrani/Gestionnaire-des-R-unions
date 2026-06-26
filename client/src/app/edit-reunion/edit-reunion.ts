@@ -10,7 +10,7 @@ import { ReunionService } from '../services/reunion';
   templateUrl: './edit-reunion.html',
   styleUrl: './edit-reunion.css' 
 })
-export class EditReunion implements OnInit {
+export class EditReunionComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private reunionService = inject(ReunionService);

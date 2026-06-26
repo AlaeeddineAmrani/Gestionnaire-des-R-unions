@@ -1,0 +1,32 @@
+<div class="user-list-container">
+    <h2>Liste des utilisateurs</h2>
+
+    <div *ngIf="isLoading">Chargement des utilisateurs en cours...</div>
+
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <div *ngIf="!isLoading && utilisateurs.length === 0">
+        Aucun utilisateur.
+    </div>
+
+    <div class="cards-grid" *ngIf="!isLoading && utilisateurs.length > 0">
+
+        @for (utilisateur of utilisateurs; track utilisateur.id_utilisateur) {
+        <div class="utilisateur-card">
+            <h3>{{ utilisateur.nom + " " + utilisateur.prenom }}</h3>
+            <p><strong>Email :</strong> {{ utilisateur.email }}</p>
+            <p><strong>Role :</strong> {{ utilisateur.role }}</p>
+            <p><strong>ID du service :</strong> {{ utilisateur.id_service }}</p>
+
+            <div class="card-actions">
+                <button class="btn-edit" (click)="onEdit(utilisateur.id_utilisateur)">
+                    Modifier
+                </button>
+                <button class="btn-delete" (click)="onDelete(utilisateur.id_utilisateur)">
+                    Supprimer
+                </button>
+            </div>
+        </div>
+        }
+    </div>
+</div>

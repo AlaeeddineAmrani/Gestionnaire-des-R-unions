@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { AuthComponent } from './auth/auth';
-import { AddReunion } from './add-reunion/add-reunion';
+import { AddReunionComponent } from './add-reunion/add-reunion';
 import { ReunionListComponent } from './reunion-list/reunion-list';
-import { EditReunion } from './edit-reunion/edit-reunion';
-import { AddUser } from './add-user/add-user';
-/*
-import { UserListComponent } from './user-list/user-list';
-import { EditUser } from './edit-user/edit-user';
+import { EditReunionComponent } from './edit-reunion/edit-reunion';
+import { AddUserComponent } from './add-user/add-user';
+import { EditUserComponent } from './edit-user/edit-user';
+import { UtilisateurListComponent } from './user-list/user-list';
 
+/*
 import { AddSalle } from './add-salle/add-salle';
 import { SalleListComponent } from './salle-list/salle-list';
 import { EditSalle } from './edit-salle/edit-salle';
@@ -18,19 +18,19 @@ export const routes: Routes = [
   { path: 'login', component: AuthComponent },
 
   // 2. Reunion routes
-  { path: 'addreunion', component: AddReunion },
+  { path: 'addreunion', component: AddReunionComponent },
 
   { path: 'getreunions', component: ReunionListComponent },
 
-  { path: 'edit-reunion/:id', component: EditReunion },
+  { path: 'edit-reunion/:id', component: EditReunionComponent },
 
   // 3. User routes
-  { path: 'adduser', component: AddUser },
-  /*
-  { path: 'getusers', component: UserListComponent },
+  { path: 'adduser', component: AddUserComponent },
 
-  { path: 'edit-user/:id', component: EditUser },
-  */
+  { path: 'getusers', component: UtilisateurListComponent },
+
+  { path: 'edit-user/:id', component: EditUserComponent },
+
 
   // 4. Salle routes
   /*

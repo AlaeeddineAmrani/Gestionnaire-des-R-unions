@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // 1. Import FormsModule
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-auth',
-  imports: [FormsModule], // 2. Add it to the imports array
+  imports: [FormsModule, CommonModule], // 2. Add it to the imports array
   templateUrl: './auth.html',
   styleUrl: './auth.css'
 })

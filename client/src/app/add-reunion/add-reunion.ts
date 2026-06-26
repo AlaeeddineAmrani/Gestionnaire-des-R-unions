@@ -9,7 +9,7 @@ import { ReunionService } from '../services/reunion'; // 1. Importe le service
   templateUrl: './add-reunion.html',
   styleUrl: './add-reunion.css',
 })
-export class AddReunion {
+export class AddReunionComponent {
   private router = inject(Router);
   private reunionService = inject(ReunionService); // 2. Injecte le service
   

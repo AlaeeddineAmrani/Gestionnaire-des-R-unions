@@ -9,7 +9,7 @@ import { UtilisateurService } from '../services/utilisateur';
   templateUrl: './add-user.html',
   styleUrl: './add-user.css',
 })
-export class AddUser {
+export class AddUserComponent {
 
   private router = inject(Router);
   private utilisateurService = inject(UtilisateurService); // 2. Injecte le service

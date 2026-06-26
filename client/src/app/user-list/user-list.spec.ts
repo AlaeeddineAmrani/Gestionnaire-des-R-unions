@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddReunionComponent } from './add-reunion';
+import { UserList } from './user-list';
 
-describe('AddReunionComponent', () => {
-  let component: AddReunionComponent;
-  let fixture: ComponentFixture<AddReunionComponent>;
+describe('UserList', () => {
+  let component: UserList;
+  let fixture: ComponentFixture<UserList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddReunionComponent],
+      imports: [UserList],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddReunionComponent);
+    fixture = TestBed.createComponent(UserList);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
