@@ -1,24 +1,54 @@
-<div class="add-user-page">
-    <div class="form-container">
-        <h2 class="title">Créer un utilisateur</h2> 
-        <form>
-            <div class="input-group">
-                <input type="text" name="nom" required placeholder="Nom" [(ngModel)]="nom">
-            </div>
-            <div class="input-group">
-                <input type="text" name="prenom" required placeholder="Prénom" [(ngModel)]="prenom">
-            </div>
-            <div class="input-group">
-                <input type="email" name="email" required placeholder="Adresse email" [(ngModel)]="email">
-            </div>
-            <div class="input-group">
-                <input type="password" name="mot_de_passe" required placeholder="Mot de passe" [(ngModel)]="mot_de_passe">
-            </div>
-            <div class="input-group">
-                <input type="number" name="id_service" required placeholder="ID du service" [(ngModel)]="id_service">
-            </div>
-
-            <button type="button" class="submit-btn" (click)="onSubmit()">Enregistrer l'Utilisateur</button>
-        </form>
+<div class="form-page">
+  <header class="page-topbar">
+    <div class="topbar-left">
+      <button class="btn-back" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Employés
+      </button>
+      <span style="color:var(--slate-300)">/</span>
+      <span class="topbar-title">Nouvel Employé</span>
     </div>
+  </header>
+
+  <div class="form-body">
+    <div class="form-card">
+      <p class="form-section-title">Informations de l'employé</p>
+      <form>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" name="nom" required placeholder="Nom de famille" [(ngModel)]="nom">
+          </div>
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" name="prenom" required placeholder="Prénom" [(ngModel)]="prenom">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Adresse email</label>
+          <input type="email" name="email" required placeholder="email@berkane.ma" [(ngModel)]="email">
+        </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <input type="password" name="mot_de_passe" required placeholder="Mot de passe initial" [(ngModel)]="mot_de_passe">
+        </div>
+        <div class="form-group">
+          <label>Service</label>
+          <select name="id_service" [(ngModel)]="id_service">
+            <option value="" disabled selected>Sélectionner un service...</option>
+            <option *ngFor="let service of services" [value]="service.id_service">
+              {{ service.nom_service }}
+            </option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-back" (click)="goBack()">Annuler</button>
+          <button type="button" class="btn-primary" (click)="onSubmit()">Enregistrer l'Employé</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

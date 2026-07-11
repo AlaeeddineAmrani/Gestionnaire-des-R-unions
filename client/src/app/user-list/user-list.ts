@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Obligatoire pour utiliser *ngFor
 import { UtilisateurService } from '../services/utilisateur';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-list',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './user-list.html',
   styleUrl: './user-list.css'
@@ -12,8 +13,8 @@ import { Router } from '@angular/router';
 // On implémente OnInit
 export class UtilisateurListComponent implements OnInit {
   private utilisateurService = inject(UtilisateurService);
-
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   
   // Tableau qui va stocker les données reçues de l'API
   utilisateurs: any[] = [];
@@ -32,18 +33,27 @@ export class UtilisateurListComponent implements OnInit {
       next: (data) => {
         this.utilisateurs = data; // On stocke les données
         this.isLoading = false; // On arrête le chargement
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erreur lors du chargement des utilisateurs', err);
         this.errorMessage = 'Impossible de charger les utilisateurs.';
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   onEdit(id: number) {
-    // Redirige vers une route du type /edit-utilisateur/5
     this.router.navigate(['/edit-user', id]); 
+  }
+
+  goToAdd() {
+    this.router.navigate(['/adduser']);
+  }
+
+  goBack() {
+    this.router.navigate(['/admin-dashboard']);
   }
 
   onDelete(id: number) {

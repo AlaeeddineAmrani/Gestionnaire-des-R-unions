@@ -1,6 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Interface } from 'readline';
+
+export interface Utilisateur {
+  id_utilisateur: number;
+  nom: string;
+  prenom: string;
+}
 
 @Injectable({
   providedIn: 'root'

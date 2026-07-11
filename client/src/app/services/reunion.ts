@@ -33,4 +33,31 @@ export class ReunionService {
   updateReunion(id: number, data: FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
+
+  // Récupérer les réunions de l'utilisateur connecté
+  getMyReunions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/my`);
+  }
+
+  // Télécharger le PV d'une réunion (retourne un Blob)
+  downloadPV(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pv`, { responseType: 'blob' });
+  }
+
+  // Rechercher des points par mot(s) clé(s)
+  searchPoints(query: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/search/points`, {
+      params: { q: query }
+    });
+  }
+
+  // Récupérer la réunion liée à un point
+  getReunionByPointId(pointId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/point/${pointId}/reunion`);
+  }
+
+  // Récupérer les détails complets d'une réunion (infos + points + participants)
+  getReunionDetails(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}/details`);
+  }
 }

@@ -1,0 +1,45 @@
+<div class="dashboard-page">
+  <!-- TOP NAV -->
+  <header class="dash-topbar user-theme">
+    <div class="dash-topbar-left">
+      <h1>Espace Employé</h1>
+      <span class="role-badge" style="background:rgba(0,0,0,0.1)">User</span>
+    </div>
+
+    <div class="dash-topbar-right">
+      <div class="user-greeting">
+        <div class="avatar" style="background:#fff; color:var(--orange-dark)">
+          {{ userName.charAt(0).toUpperCase() }}
+        </div>
+        <span>{{ userName }}</span>
+      </div>
+      <button class="btn-outline-white" (click)="onLogout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="dash-content">
+    
+    <!-- RÉUNIONS -->
+    <section class="dash-section">
+      <h2 class="dash-section-title">Mes Réunions</h2>
+      <div class="dash-grid">
+        <div class="dash-card" (click)="navigate('/getreunions')">
+          <div class="dash-card-icon icon-reunions">📋</div>
+          <div class="dash-card-text">
+            <h3>Liste des Réunions</h3>
+            <p>Consulter les réunions où je suis invité ou organisateur.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/addreunion')">
+          <div class="dash-card-icon icon-add">➕</div>
+          <div class="dash-card-text">
+            <h3>Créer une Réunion</h3>
+            <p>Planifier une nouvelle réunion et réserver une salle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>

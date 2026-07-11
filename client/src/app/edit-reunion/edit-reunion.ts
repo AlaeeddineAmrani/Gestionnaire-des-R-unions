@@ -124,12 +124,16 @@ export class EditReunionComponent implements OnInit {
     this.reunionService.updateReunion(this.id_reunion, formData).subscribe({
       next: (response) => {
         alert('Réunion modifiée avec succès !');
-        this.router.navigate(['/dashboard']); // Ou vers la liste des réunions
+        this.router.navigate(['/getreunions']);
       },
       error: (err) => {
         console.error('Erreur de modification', err);
         alert('Erreur lors de la modification de la réunion.');
       }
     });
+  }
+
+  goBack() {
+    this.router.navigate(['/getreunions']);
   }
 }

@@ -1,0 +1,136 @@
+<div class="dashboard-page">
+  <!-- TOP NAV -->
+  <header class="dash-topbar admin-theme">
+    <div class="dash-topbar-left">
+      <h1>Espace Superviseur</h1>
+      <span class="role-badge">Admin</span>
+    </div>
+    
+    <form class="search-container" (ngSubmit)="onSearch()">
+      <div class="search-input-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="search"
+          name="q"
+          [(ngModel)]="searchQuery"
+          placeholder="Rechercher par mot clé les points..."
+          aria-label="Recherche"
+        >
+      </div>
+    </form>
+
+    <div class="dash-topbar-right">
+      <div class="user-greeting">
+        <div class="avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+        <span>{{ userName }}</span>
+      </div>
+      <button class="btn-outline-white" (click)="onLogout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="dash-content">
+    
+    <!-- RÉUNIONS -->
+    <section class="dash-section">
+      <h2 class="dash-section-title">Réunions</h2>
+      <div class="dash-grid">
+        <div class="dash-card" (click)="navigate('/getreunions')">
+          <div class="dash-card-icon icon-reunions">📋</div>
+          <div class="dash-card-text">
+            <h3>Liste des Réunions</h3>
+            <p>Voir, modifier ou supprimer toutes les réunions.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/addreunion')">
+          <div class="dash-card-icon icon-add">➕</div>
+          <div class="dash-card-text">
+            <h3>Créer une Réunion</h3>
+            <p>Planifier une nouvelle réunion et réserver une salle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SALLES -->
+    <section class="dash-section">
+      <h2 class="dash-section-title">Salles & Espaces</h2>
+      <div class="dash-grid">
+        <div class="dash-card" (click)="navigate('/getsalles')">
+          <div class="dash-card-icon icon-salles">🏢</div>
+          <div class="dash-card-text">
+            <h3>Liste des Salles</h3>
+            <p>Consulter, modifier ou supprimer les salles.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/addsalle')">
+          <div class="dash-card-icon icon-add">🚪</div>
+          <div class="dash-card-text">
+            <h3>Ajouter une Salle</h3>
+            <p>Enregistrer une nouvelle salle et sa capacité.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UTILISATEURS -->
+    <section class="dash-section">
+      <h2 class="dash-section-title">Utilisateurs</h2>
+      <div class="dash-grid">
+        <div class="dash-card" (click)="navigate('/getusers')">
+          <div class="dash-card-icon icon-users">👥</div>
+          <div class="dash-card-text">
+            <h3>Liste des Employés</h3>
+            <p>Gérer les comptes, modifier ou bloquer des accès.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/adduser')">
+          <div class="dash-card-icon icon-add">👤</div>
+          <div class="dash-card-text">
+            <h3>Créer un Employé</h3>
+            <p>Ajouter un nouvel employé dans un service.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORGANISATION -->
+    <section class="dash-section">
+      <h2 class="dash-section-title">Organisation</h2>
+      <div class="dash-grid">
+        <div class="dash-card" (click)="navigate('/getservices')">
+          <div class="dash-card-icon icon-services">🗂️</div>
+          <div class="dash-card-text">
+            <h3>Liste des Services</h3>
+            <p>Gérer les services de la commune.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/addservice')">
+          <div class="dash-card-icon icon-add">🗄️</div>
+          <div class="dash-card-text">
+            <h3>Créer un Service</h3>
+            <p>Ajouter un nouveau service.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/getdivisions')">
+          <div class="dash-card-icon icon-divisions">🏛️</div>
+          <div class="dash-card-text">
+            <h3>Liste des Divisions</h3>
+            <p>Gérer les divisions existantes.</p>
+          </div>
+        </div>
+        <div class="dash-card" (click)="navigate('/adddivision')">
+          <div class="dash-card-icon icon-add">🏗️</div>
+          <div class="dash-card-text">
+            <h3>Créer une Division</h3>
+            <p>Ajouter une nouvelle division.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>

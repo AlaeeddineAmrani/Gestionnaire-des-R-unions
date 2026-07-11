@@ -1,0 +1,124 @@
+<div class="search-page">
+
+  <!-- ── HEADER ── -->
+  <header class="search-header">
+    <button class="btn-back" (click)="goBack()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Tableau de bord
+    </button>
+
+    <form class="search-bar-wrapper" (ngSubmit)="onSearch()">
+      <div class="search-bar">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          id="search-input"
+          type="search"
+          class="search-input"
+          [(ngModel)]="searchQuery"
+          name="q"
+          placeholder="Rechercher des points par mot-clé..."
+          autocomplete="off"
+          autofocus
+        >
+        <button type="submit" class="btn-search">Rechercher</button>
+      </div>
+    </form>
+  </header>
+
+  <!-- ── CONTENU ── -->
+  <main class="search-content">
+
+    <!-- État : chargement -->
+    <div class="state-block" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Recherche en cours...</p>
+    </div>
+
+    <!-- État : erreur -->
+    <div class="state-block error" *ngIf="!isLoading && errorMessage">
+      <span class="state-icon">⚠️</span>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- État : pas encore cherché -->
+    <div class="state-block empty" *ngIf="!isLoading && !hasSearched && !errorMessage">
+      <span class="state-icon">🔍</span>
+      <p>Entrez un mot-clé pour trouver des points de l'ordre du jour.</p>
+    </div>
+
+    <!-- État : aucun résultat -->
+    <div class="state-block empty" *ngIf="!isLoading && hasSearched && results.length === 0 && !errorMessage">
+      <span class="state-icon">😔</span>
+      <p>Aucun point trouvé pour <strong>"{{ searchQuery }}"</strong>.</p>
+    </div>
+
+    <!-- ── RÉSULTATS ── -->
+    <section *ngIf="!isLoading && results.length > 0">
+      <p class="results-count">
+        <strong>{{ results.length }}</strong> point(s) trouvé(s) pour
+        <span class="query-highlight">"{{ searchQuery }}"</span>
+      </p>
+
+      <div class="results-grid">
+        <div
+          class="point-card"
+          *ngFor="let point of results"
+          (click)="goToReunion(point)"
+          role="button"
+          tabindex="0"
+          (keyup.enter)="goToReunion(point)"
+        >
+          <!-- Badge statut -->
+          <span class="badge" [class.badge-done]="point.est_discute" [class.badge-pending]="!point.est_discute">
+            {{ point.est_discute ? '✅ Discuté' : '⏳ En attente' }}
+          </span>
+
+          <!-- Description du point -->
+          <h3 class="point-title">{{ point.description }}</h3>
+
+          <!-- Réunion associée -->
+          <div class="reunion-info">
+            <div class="reunion-name">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              {{ point.titre_reunion }}
+            </div>
+            <div class="reunion-date">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {{ formatDate(point.date_reunion) }} · {{ point.heure_debut?.substring(0,5) }} – {{ point.heure_fin_prevue?.substring(0,5) }}
+            </div>
+          </div>
+
+          <!-- Call to action -->
+          <div class="card-cta">
+            Voir la réunion
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>

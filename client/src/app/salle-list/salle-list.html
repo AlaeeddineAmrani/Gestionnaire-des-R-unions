@@ -1,0 +1,51 @@
+<div class="form-page">
+
+  <!-- TOP BAR -->
+  <header class="page-topbar">
+    <div class="topbar-left">
+      <button class="btn-back" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Tableau de bord
+      </button>
+      <span style="color:var(--slate-300)">/</span>
+      <span class="topbar-title">Salles &amp; Espaces</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-primary" (click)="goToAdd()">+ Ajouter une salle</button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="spinner-wrap" *ngIf="isLoading"><div class="spinner"></div></div>
+    <p class="error-state" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="empty-state" *ngIf="!isLoading && salles.length === 0 && !errorMessage">
+      Aucune salle enregistrée pour le moment.
+    </p>
+    <div class="table-wrapper" *ngIf="!isLoading && salles.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nom de la salle</th>
+            <th>Capacité</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let salle of salles">
+            <td>{{ salle.id_salle }}</td>
+            <td style="font-weight:600; color:var(--slate-800)">{{ salle.nom_salle }}</td>
+            <td>{{ salle.capacite }} personnes</td>
+            <td class="td-actions">
+              <button class="btn-secondary" (click)="goToEdit(salle.id_salle)">Modifier</button>
+              <button class="btn-danger" (click)="onDelete(salle.id_salle)">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

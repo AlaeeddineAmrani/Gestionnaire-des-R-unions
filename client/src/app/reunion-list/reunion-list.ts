@@ -1,10 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Obligatoire pour utiliser *ngFor
 import { ReunionService } from '../services/reunion';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-reunion-list',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './reunion-list.html',
   styleUrl: './reunion-list.css'
@@ -12,8 +14,9 @@ import { Router } from '@angular/router';
 // On implémente OnInit
 export class ReunionListComponent implements OnInit {
   private reunionService = inject(ReunionService);
-
+  private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   
   // Tableau qui va stocker les données reçues de l'API
   reunions: any[] = [];
@@ -28,22 +31,57 @@ export class ReunionListComponent implements OnInit {
   }
 
   fetchReunions() {
-    this.reunionService.getAllReunions().subscribe({
+    const isAdmin = this.authService.isAdmin();
+    const fetchObservable = isAdmin ? this.reunionService.getAllReunions() : this.reunionService.getMyReunions();
+
+    fetchObservable.subscribe({
       next: (data) => {
+        console.log('[DEBUG] Réunions reçues:', data);
         this.reunions = data; // On stocke les données
         this.isLoading = false; // On arrête le chargement
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erreur lors du chargement des réunions', err);
         this.errorMessage = 'Impossible de charger les réunions.';
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
+  onDownloadPV(id: number) {
+    this.reunionService.downloadPV(id).subscribe({
+      next: (blob) => {
+        // Créer un lien temporaire pour forcer le téléchargement du fichier
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pv_reunion_${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Erreur lors du téléchargement du PV', err);
+        alert('Impossible de télécharger le PV.');
+      }
+    });
+  }
+
+
   onEdit(id: number) {
-    // Redirige vers une route du type /edit-reunion/5
     this.router.navigate(['/edit-reunion', id]); 
+  }
+
+  goToAdd() {
+    this.router.navigate(['/addreunion']);
+  }
+
+  goBack() {
+    const dest = this.authService.isAdmin() ? '/admin-dashboard' : '/user-dashboard';
+    this.router.navigate([dest]);
   }
 
   onDelete(id: number) {

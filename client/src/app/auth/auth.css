@@ -1,74 +1,63 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 .auth-page {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-image: url('../../assets/bg.jpg');
+    background-color: var(--slate-900);
+    /* L'image de fond assombrie */
+    background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.8)), url('../../assets/bg.jpg');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     background-attachment: fixed;
-    background-color: rgba(0, 0, 0, 0.5); 
+    padding: 1rem;
 }
 
-.form-container{
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    font-family: Arial, sans-serif;
-    width: 30%;
-    background-color: rgba(255, 255, 255, 0.9);
-}
-
-.form-container:hover{
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.title{
-    text-align: center;
-    margin-bottom: 30px;
-    margin-top: 10px;
-    color: #e9a112;
-    font-size: 28px;
-}
-
-.input-group{
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-.submit-btn{
-    background-color: #e9a112;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+.auth-card {
+    background: #fff;
     width: 100%;
+    max-width: 420px;
+    border-radius: var(--r-xl);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+/* Orange top accent */
+.auth-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: var(--orange);
 }
 
-.submit-btn:hover{
-    background-color: #d27b2f;
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.logo-circle {
+    width: 64px;
+    height: 64px;
+    background: var(--orange-muted);
+    color: var(--orange-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+}
+.auth-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--slate-800);
+    margin: 0 0 0.4rem;
+}
+.auth-header p {
+    font-size: 0.9rem;
+    color: var(--slate-500);
+    margin: 0;
 }
 
-input[type="email"], input[type="password"]{
-    padding: 10px;
-    border: 1px solid #e9a112;
-    border-radius: 3px;
-}
-
-input[type="email"]:focus, input[type="password"]:focus{
-    border-color: #d2912f;
-    border-width: 2px;
-    outline: none;
+.auth-form .form-group {
+    margin-bottom: 1.5rem;
 }

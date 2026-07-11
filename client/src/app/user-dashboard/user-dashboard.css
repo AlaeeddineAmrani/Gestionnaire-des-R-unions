@@ -1,0 +1,7 @@
+/* User dashboard inherits from admin-dashboard.css. 
+   We just import it or rely on global class definitions. 
+   But since Angular scopes CSS by default, we can duplicate the necessary classes 
+   or just let the global CSS handle it. Since we haven't put these in app.css, 
+   we will copy the dashboard styles here for consistency. */
+
+@import '../admin-dashboard/admin-dashboard.css';

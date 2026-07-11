@@ -34,6 +34,17 @@ class SalleModel {
         });
     }
 
+    static updateSalle(id, salleData, callback) {
+        const query = 'UPDATE salle SET nom_salle = ?, capacite = ? WHERE id_salle = ?';
+        db.query(query, [salleData.nom_salle, salleData.capacite, id], (err, result) => {
+            if (err) {
+                console.error('Erreur lors de la mise à jour de la salle :', err);
+                return callback(err, null);
+            }
+            callback(null, result);
+        });
+    }
+
     static deleteSalle(id, callback) {
         const query = 'DELETE FROM salle WHERE id_salle = ?';
         db.query(query, [id], (err, result) => {

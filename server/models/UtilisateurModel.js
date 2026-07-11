@@ -55,6 +55,10 @@ class UtilisateurModel {
             callback(null, result);
         });
     }
+
+    static checkDisponibiliteParticipants(ids, callback){
+
+    }
 }
 
 module.exports = UtilisateurModel;

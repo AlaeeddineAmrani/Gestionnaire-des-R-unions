@@ -1,32 +1,73 @@
-<div class="reunion-list-container">
-  <h2>Liste des Réunions</h2>
+<div class="form-page">
 
-  <div *ngIf="isLoading">Chargement des réunions en cours...</div>
+  <!-- TOP BAR -->
+  <header class="page-topbar">
+    <div class="topbar-left">
+      <button class="btn-back" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Tableau de bord
+      </button>
+      <span style="color:var(--slate-300)">/</span>
+      <span class="topbar-title">Réunions</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-primary" (click)="goToAdd()">+ Nouvelle réunion</button>
+    </div>
+  </header>
 
-  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  <div class="page-content">
 
-  <div *ngIf="!isLoading && reunions.length === 0">
-    Aucune réunion prévue.
-  </div>
+    <!-- Loading -->
+    <div class="spinner-wrap" *ngIf="isLoading"><div class="spinner"></div></div>
 
-  <div class="cards-grid" *ngIf="!isLoading && reunions.length > 0">
-    
-    @for (reunion of reunions; track reunion.id_reunion) {
-      <div class="reunion-card">
-        <h3>{{ reunion.titre }}</h3>
-        <p><strong>Date :</strong> {{ reunion.date_reunion | date:'dd/MM/yyyy' }}</p>
-        <p><strong>Horaires :</strong> {{ reunion.heure_debut }} - {{ reunion.heure_fin_prevue }}</p>
-        <p><strong>Salle N° :</strong> {{ reunion.id_salle }}</p>
-        
-        <div class="card-actions">
-          <button class="btn-edit" (click)="onEdit(reunion.id_reunion)">
-            Modifier
-          </button>
-          <button class="btn-delete" (click)="onDelete(reunion.id_reunion)">
-            Supprimer
-          </button>
-        </div>
-      </div>
-    }
+    <!-- Error -->
+    <p class="error-state" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <!-- Empty -->
+    <p class="empty-state" *ngIf="!isLoading && reunions.length === 0 && !errorMessage">
+      Aucune réunion enregistrée pour le moment.
+    </p>
+
+    <!-- Table -->
+    <div class="table-wrapper" *ngIf="!isLoading && reunions.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Titre</th>
+            <th>Date</th>
+            <th>Horaires</th>
+            <th>Salle</th>
+            <th>PV</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reunion of reunions; track reunion.id_reunion) {
+            <tr>
+              <td>{{ reunion.id_reunion }}</td>
+              <td style="font-weight:600; color:var(--slate-800)">{{ reunion.titre }}</td>
+              <td>{{ reunion.date_reunion | date:'dd/MM/yyyy' }}</td>
+              <td>{{ reunion.heure_debut?.substring(0,5) }} – {{ reunion.heure_fin_prevue?.substring(0,5) }}</td>
+              <td>Salle {{ reunion.id_salle }}</td>
+              <td>
+                <button class="btn-success" *ngIf="reunion.pv_rapport" (click)="onDownloadPV(reunion.id_reunion)">
+                  ↓ PV
+                </button>
+                <span style="color:var(--slate-300);font-size:.8rem" *ngIf="!reunion.pv_rapport">—</span>
+              </td>
+              <td class="td-actions">
+                <button class="btn-secondary" (click)="onEdit(reunion.id_reunion)">Modifier</button>
+                <button class="btn-danger" (click)="onDelete(reunion.id_reunion)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>

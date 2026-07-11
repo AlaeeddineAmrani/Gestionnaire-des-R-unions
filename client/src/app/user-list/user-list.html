@@ -1,32 +1,61 @@
-<div class="user-list-container">
-    <h2>Liste des utilisateurs</h2>
+<div class="form-page">
 
-    <div *ngIf="isLoading">Chargement des utilisateurs en cours...</div>
-
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-
-    <div *ngIf="!isLoading && utilisateurs.length === 0">
-        Aucun utilisateur.
+  <!-- TOP BAR -->
+  <header class="page-topbar">
+    <div class="topbar-left">
+      <button class="btn-back" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Tableau de bord
+      </button>
+      <span style="color:var(--slate-300)">/</span>
+      <span class="topbar-title">Employés</span>
     </div>
-
-    <div class="cards-grid" *ngIf="!isLoading && utilisateurs.length > 0">
-
-        @for (utilisateur of utilisateurs; track utilisateur.id_utilisateur) {
-        <div class="utilisateur-card">
-            <h3>{{ utilisateur.nom + " " + utilisateur.prenom }}</h3>
-            <p><strong>Email :</strong> {{ utilisateur.email }}</p>
-            <p><strong>Role :</strong> {{ utilisateur.role }}</p>
-            <p><strong>ID du service :</strong> {{ utilisateur.id_service }}</p>
-
-            <div class="card-actions">
-                <button class="btn-edit" (click)="onEdit(utilisateur.id_utilisateur)">
-                    Modifier
-                </button>
-                <button class="btn-delete" (click)="onDelete(utilisateur.id_utilisateur)">
-                    Supprimer
-                </button>
-            </div>
-        </div>
-        }
+    <div class="topbar-right">
+      <button class="btn-primary" (click)="goToAdd()">+ Ajouter un employé</button>
     </div>
+  </header>
+
+  <div class="page-content">
+    <div class="spinner-wrap" *ngIf="isLoading"><div class="spinner"></div></div>
+    <p class="error-state" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="empty-state" *ngIf="!isLoading && utilisateurs.length === 0 && !errorMessage">
+      Aucun employé enregistré pour le moment.
+    </p>
+    <div class="table-wrapper" *ngIf="!isLoading && utilisateurs.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nom complet</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Service</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (utilisateur of utilisateurs; track utilisateur.id_utilisateur) {
+            <tr>
+              <td>{{ utilisateur.id_utilisateur }}</td>
+              <td style="font-weight:600; color:var(--slate-800)">{{ utilisateur.prenom }} {{ utilisateur.nom }}</td>
+              <td>{{ utilisateur.email }}</td>
+              <td>
+                <span class="role-badge" [class.role-admin]="utilisateur.role === 'ADMIN'">
+                  {{ utilisateur.role }}
+                </span>
+              </td>
+              <td>{{ utilisateur.id_service }}</td>
+              <td class="td-actions">
+                <button class="btn-secondary" (click)="onEdit(utilisateur.id_utilisateur)">Modifier</button>
+                <button class="btn-danger" (click)="onDelete(utilisateur.id_utilisateur)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

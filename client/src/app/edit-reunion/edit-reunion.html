@@ -1,44 +1,64 @@
-<div class="add-reunion-page">
-    <div class="form-container">
-        <h2 class="title">Modifier la Réunion</h2>
-        <form>
-            <div class="input-group">
-                <label>Titre de la réunion</label>
-                <input type="text" name="titre" required [(ngModel)]="titre">
-            </div>
-
-            <div class="input-group">
-                <label>Date de la réunion</label>
-                <input type="date" name="date_reunion" required [min]="minDate" [(ngModel)]="date_reunion">
-            </div>
-
-            <div class="input-group">
-                <label>Heure de début</label>
-                <input type="time" name="heure_debut" required [(ngModel)]="heure_debut">
-            </div>
-
-            <div class="input-group">
-                <label>Heure de fin prévue</label>
-                <input type="time" name="heure_fin_prevue" required [(ngModel)]="heure_fin_prevue">
-            </div>
-
-            <div class="input-group">
-                <label>Heure de fin réelle</label>
-                <input type="time" name="heure_fin_reelle" [(ngModel)]="heure_fin_reelle">
-            </div>
-
-            <div class="input-group">
-                <label>ID de la Salle</label>
-                <input type="number" name="id_salle" required [(ngModel)]="id_salle">
-            </div>
-
-            <div class="input-group">
-                <label>Importer le PV / Rapport (PDF, DOCX...)</label>
-                <input type="file" name="pv_rapport" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)">
-                <small *ngIf="fichierExistant">Un fichier est déjà associé à cette réunion.</small>
-            </div>
-
-            <button type="button" class="submit-btn" (click)="onSubmit()">Mettre à jour</button>
-        </form>
+<div class="form-page">
+  <header class="page-topbar">
+    <div class="topbar-left">
+      <button class="btn-back" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Réunions
+      </button>
+      <span style="color:var(--slate-300)">/</span>
+      <span class="topbar-title">Modifier la Réunion</span>
     </div>
+  </header>
+
+  <div class="form-body">
+    <div class="form-card">
+      <p class="form-section-title">Modifier les informations</p>
+      <form>
+        <div class="form-group">
+          <label>Titre de la réunion</label>
+          <input type="text" name="titre" required [(ngModel)]="titre">
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="date_reunion" required [min]="minDate" [(ngModel)]="date_reunion">
+          </div>
+          <div class="form-group">
+            <label>ID de la Salle</label>
+            <input type="number" name="id_salle" required [(ngModel)]="id_salle">
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Heure de début</label>
+            <input type="time" name="heure_debut" required [(ngModel)]="heure_debut">
+          </div>
+          <div class="form-group">
+            <label>Heure de fin prévue</label>
+            <input type="time" name="heure_fin_prevue" required [(ngModel)]="heure_fin_prevue">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Heure de fin réelle (optionnel)</label>
+          <input type="time" name="heure_fin_reelle" [(ngModel)]="heure_fin_reelle">
+        </div>
+        <div class="form-divider"></div>
+        <p class="form-section-title">PV / Rapport</p>
+        <div class="form-group">
+          <label>Importer un fichier (PDF, DOCX...)</label>
+          <input type="file" name="pv_rapport" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)">
+          <small style="color:var(--slate-400);font-size:0.75rem" *ngIf="fichierExistant">
+            ✓ Un fichier est déjà associé à cette réunion.
+          </small>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-back" (click)="goBack()">Annuler</button>
+          <button type="button" class="btn-primary" (click)="onSubmit()">Mettre à jour</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

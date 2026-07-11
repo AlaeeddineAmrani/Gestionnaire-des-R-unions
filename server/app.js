@@ -1,6 +1,7 @@
 const db = require('./config/db');
 const express = require('express');
 const cors = require('cors');
+const authMiddleware = require('./middlewares/authMiddleware');
 
 const app = express();
 
@@ -9,18 +10,25 @@ app.use(cors());
 app.use(express.json());
 
 // Connect the DB
-db.connect();
+db.getConnection();
 
 // Routes
 const reunionRoutes = require('./routes/reunionRoutes');
-const salleRoutes = require('./routes/salleRoutes')
+const salleRoutes = require('./routes/salleRoutes');
 const utilisateurRoutes = require('./routes/utilisateurRoutes');
 const authRoutes = require('./routes/authRoutes');
+const serviceRoutes = require('./routes/serviceRoutes');
+const divisionRoutes = require('./routes/divisionRoutes');
 
-app.use('/api/reunions', reunionRoutes);
-app.use('/api/salles', salleRoutes);
-app.use('/api/utilisateurs', utilisateurRoutes);
+// ── Route publique (pas de middleware JWT) ─────────────────────────────────
 app.use('/api/login', authRoutes);
+
+// ── Routes protégées (middleware JWT obligatoire) ──────────────────────────
+app.use('/api/reunions', authMiddleware, reunionRoutes);
+app.use('/api/salles', authMiddleware, salleRoutes);
+app.use('/api/utilisateurs', authMiddleware, utilisateurRoutes);
+app.use('/api/services', authMiddleware, serviceRoutes);
+app.use('/api/divisions', authMiddleware, divisionRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

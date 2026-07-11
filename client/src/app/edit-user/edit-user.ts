@@ -75,12 +75,16 @@ export class EditUserComponent implements OnInit {
     this.utilisateurService.updateUtilisateur(this.id_utilisateur, formData).subscribe({
       next: (response) => {
         alert('Utilisateur modifié avec succès !');
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/getusers']);
       },
       error: (err) => {
         console.error(err);
         alert("Une erreur est survenue lors de la modification.");
       }
     });
+  }
+
+  goBack() {
+    this.router.navigate(['/getusers']);
   }
 }

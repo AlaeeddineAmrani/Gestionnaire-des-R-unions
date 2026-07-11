@@ -1,4 +1,7 @@
 const UtilisateurModel = require('../models/utilisateurModel');
+const bcrypt = require('bcrypt');
+
+const SALT_ROUNDS = 10; // Nombre de tours de salage pour bcrypt
 
 const getAllUtilisateurs = (req, res) => {
     UtilisateurModel.getAllUtilisateurs((err, results) => {
@@ -27,35 +30,63 @@ const getUtilisateurById = (req, res) => {
     });
 };
 
-const createUtilisateur = (req, res) => {
-    const UtilisateurData = req.body;
-    UtilisateurModel.createUtilisateur(UtilisateurData, (err, result) => {
-        if (err) {
-            return res.status(500).json({ 
-                message: "Erreur lors de la création de l\'utilisateur", 
-                error: err 
-        })}
+const createUtilisateur = async (req, res) => {
+    try {
+        const utilisateurData = req.body;
 
-        res.status(200).json({
+        // Hasher le mot de passe avant insertion
+        const hashedPassword = await bcrypt.hash(utilisateurData.mot_de_passe, SALT_ROUNDS);
+        utilisateurData.mot_de_passe = hashedPassword;
+
+        UtilisateurModel.createUtilisateur(utilisateurData, (err, result) => {
+            if (err) {
+                return res.status(500).json({ 
+                    message: "Erreur lors de la création de l\'utilisateur", 
+                    error: err 
+                });
+            }
+
+            res.status(200).json({
                 message: "Utilisateur créé avec succes"
-            })
+            });
         });
+    } catch (error) {
+        res.status(500).json({ 
+            message: "Erreur lors du hashage du mot de passe", 
+            error: error.message 
+        });
+    }
 };
 
-const updateUtilisateur = (req, res) => {
-    const id = req.params.id;
-    const UtilisateurData = req.body;
-    UtilisateurModel.updateUtilisateur(id, UtilisateurData, (err, result) => {
-        if (err) {
-            return res.status(500).json({ 
-                message: "Erreur lors de la modification de l\'utilisateur", 
-                error: err 
-        })}
+const updateUtilisateur = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const utilisateurData = req.body;
 
-        res.status(200).json({
-            message: "utilisateur modifié avec succes"
-        })
-    });
+        // Hasher le nouveau mot de passe avant mise à jour
+        if (utilisateurData.mot_de_passe) {
+            const hashedPassword = await bcrypt.hash(utilisateurData.mot_de_passe, SALT_ROUNDS);
+            utilisateurData.mot_de_passe = hashedPassword;
+        }
+
+        UtilisateurModel.updateUtilisateur(id, utilisateurData, (err, result) => {
+            if (err) {
+                return res.status(500).json({ 
+                    message: "Erreur lors de la modification de l\'utilisateur", 
+                    error: err 
+                });
+            }
+
+            res.status(200).json({
+                message: "utilisateur modifié avec succes"
+            });
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            message: "Erreur lors du hashage du mot de passe", 
+            error: error.message 
+        });
+    }
 };
 
 const deleteUtilisateur = (req, res) => {
@@ -79,4 +110,4 @@ module.exports = {
     createUtilisateur,
     updateUtilisateur,
     deleteUtilisateur
-};
+};

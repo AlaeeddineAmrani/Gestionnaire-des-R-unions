@@ -42,14 +42,20 @@ export class AuthComponent {
     // On appelle le service d'authentification
     this.authService.login(this.email, this.mot_de_passe).subscribe({
       next: (response) => {
-        // Le token a été sauvegardé par le service (grâce au 'tap')
         console.log('Connexion réussie !', response);
-        // Redirection vers le Dashboard
-        this.router.navigate(['/dashboard']);
+        
+        // 1. On récupère le rôle en s'assurant qu'il est en majuscule pour éviter les erreurs de casse
+        const role = response.user.role.toUpperCase();
+
+        // 2. On dirige vers le bon Dashboard selon le rôle
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin-dashboard']);
+        } else {
+          this.router.navigate(['/user-dashboard']);
+        }
       },
       error: (err) => {
         console.error('Erreur de connexion', err);
-        // On vérifie si c'est l'erreur 401 qu'on a configurée dans le backend
         if (err.status === 401) {
           this.errorMessage = 'Email ou mot de passe incorrect.';
         } else {
