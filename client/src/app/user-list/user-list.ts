@@ -16,6 +16,7 @@ export class UtilisateurListComponent implements OnInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   
+  // States
   // Tableau qui va stocker les données reçues de l'API
   utilisateurs: any[] = [];
   
@@ -28,6 +29,7 @@ export class UtilisateurListComponent implements OnInit {
     this.fetchUtilisateurs();
   }
 
+  // fetcher les utilisateurs de la base de données à travers le service qui consomme les routes utilisateurs du backend 
   fetchUtilisateurs() {
     this.utilisateurService.getAllUtilisateurs().subscribe({
       next: (data) => {
@@ -44,30 +46,34 @@ export class UtilisateurListComponent implements OnInit {
     });
   }
 
+  // Quand on clique sur le bouton modifier utilisateur du frontend
   onEdit(id: number) {
     this.router.navigate(['/edit-user', id]); 
   }
 
+  // Quand on clique sur le bouton ajouter utilisateur du frontend
   goToAdd() {
     this.router.navigate(['/adduser']);
   }
 
+  // Quand on clique sur le bouton retourner du frontend
   goBack() {
     this.router.navigate(['/admin-dashboard']);
   }
 
+  // Quand on clique sur le bouton supprimer utilisateur du frontend
   onDelete(id: number) {
     const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');
     
     if (confirmDelete) {
       this.utilisateurService.deleteUtilisateur(id).subscribe({
         next: (response) => {
-          // 1. Succès : On met à jour l'interface en retirant l'utilisateur du tableau
+          // Succès : On met à jour l'interface en retirant l'utilisateur du tableau
           this.utilisateurs = this.utilisateurs.filter(utilisateur => utilisateur.id_utilisateur !== id);
           alert('Utilisateur supprimé avec succès !');
         },
         error: (err) => {
-          // 2. Erreur : On affiche un message
+          // Erreur : On affiche un message
           console.error('Erreur lors de la suppression', err);
           alert('Impossible de supprimer l\'utilisateur.');
         }

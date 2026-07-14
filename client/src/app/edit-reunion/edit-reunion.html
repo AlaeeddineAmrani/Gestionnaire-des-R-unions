@@ -14,8 +14,10 @@
   </header>
 
   <div class="form-body">
-    <div class="form-card">
-      <p class="form-section-title">Modifier les informations</p>
+
+    <!-- ── BLOC 1 : Informations générales ── -->
+    <div class="form-card" style="margin-bottom: 1.5rem;">
+      <p class="form-section-title">Informations générales</p>
       <form>
         <div class="form-group">
           <label>Titre de la réunion</label>
@@ -45,6 +47,7 @@
           <label>Heure de fin réelle (optionnel)</label>
           <input type="time" name="heure_fin_reelle" [(ngModel)]="heure_fin_reelle">
         </div>
+
         <div class="form-divider"></div>
         <p class="form-section-title">PV / Rapport</p>
         <div class="form-group">
@@ -54,11 +57,91 @@
             ✓ Un fichier est déjà associé à cette réunion.
           </small>
         </div>
-        <div class="form-actions">
-          <button type="button" class="btn-back" (click)="goBack()">Annuler</button>
-          <button type="button" class="btn-primary" (click)="onSubmit()">Mettre à jour</button>
-        </div>
       </form>
     </div>
+
+    <!-- ── BLOC 2 : Points de l'ordre du jour ── -->
+    <div class="form-card" style="margin-bottom: 1.5rem;">
+      <p class="form-section-title">
+        Points de l'ordre du jour
+        <span style="font-weight:400; color:var(--slate-400); font-size:0.8rem; text-transform:none; letter-spacing:0;">
+          ({{ points.length }} point(s))
+        </span>
+      </p>
+
+      <!-- Liste des points existants -->
+      <div class="points-list" *ngIf="points.length > 0">
+        <div class="point-item" *ngFor="let point of points; let i = index">
+          <div class="point-num">{{ i + 1 }}</div>
+
+          <!-- Description modifiable directement dans la liste -->
+          <input
+            type="text"
+            class="point-desc-input"
+            [(ngModel)]="point.description"
+            [name]="'point_' + i"
+            placeholder="Description du point..."
+          >
+
+          <!-- Toggle "discuté" : checkbox avec label -->
+          <label class="point-discute-toggle" [title]="point.est_discute ? 'Marquer comme non discuté' : 'Marquer comme discuté'">
+            <input
+              type="checkbox"
+              [(ngModel)]="point.est_discute"
+              [name]="'discute_' + i"
+            >
+            <span class="toggle-label" [class.done]="point.est_discute">
+              {{ point.est_discute ? '✅ Discuté' : '⏳ En attente' }}
+            </span>
+          </label>
+
+          <!-- Bouton supprimer ce point -->
+          <button class="btn-remove-point" type="button" (click)="supprimerPoint(i)" title="Supprimer ce point">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Message si aucun point -->
+      <p class="points-empty" *ngIf="points.length === 0">
+        Aucun point pour le moment. Ajoutez-en un ci-dessous.
+      </p>
+
+      <!-- Ajouter un nouveau point -->
+      <div class="add-point-row">
+        <input
+          type="text"
+          class="point-desc-input"
+          [(ngModel)]="nouveauPoint"
+          name="nouveauPoint"
+          placeholder="Nouveau point de l'ordre du jour..."
+          (keyup.enter)="ajouterPoint()"
+        >
+        <button type="button" class="btn-add-point" (click)="ajouterPoint()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Ajouter
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Zone d'erreur ── -->
+    <div class="error-banner" *ngIf="errorMessage">
+      ⚠️ {{ errorMessage }}
+    </div>
+
+    <!-- ── Actions ── -->
+    <div class="form-actions">
+      <button type="button" class="btn-back" (click)="goBack()">Annuler</button>
+      <button type="button" class="btn-primary" (click)="onSubmit()">Mettre à jour</button>
+    </div>
+
   </div>
 </div>

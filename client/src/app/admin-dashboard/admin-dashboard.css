@@ -203,3 +203,22 @@
   margin: 0;
   line-height: 1.4;
 }
+
+.next-reunion-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--r-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.next-reunion-card::before {
+  background: var(--orange);
+}

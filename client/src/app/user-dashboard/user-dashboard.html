@@ -19,6 +19,50 @@
 
   <!-- CONTENT -->
   <main class="dash-content">
+
+    <section class="next-reunion">
+      <h2 class="dash-section-title">Prochaine Réunion</h2>
+      <div *ngIf="nextReunion; else noReunion" class="point-card" (click)="navigate('/view-reunion/' + nextReunion.id_reunion)" style="max-width: 400px;">
+        <span class="badge badge-pending">
+          ⏳ À venir
+        </span>
+        <h3 class="point-title">{{ nextReunion.titre }}</h3>
+        
+        <div class="reunion-info">
+          <div class="reunion-name">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Salle {{ nextReunion.id_salle }}
+          </div>
+          <div class="reunion-date">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            {{ nextReunion.date_reunion | date:'fullDate' }} · {{ nextReunion.heure_debut?.substring(0,5) }} – {{ nextReunion.heure_fin_prevue?.substring(0,5) }}
+          </div>
+        </div>
+
+        <div class="card-cta">
+          Voir la réunion
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+      </div>
+      <ng-template #noReunion>
+        <p>Aucune réunion prévue pour le moment.</p>
+      </ng-template>
+    </section>
+    <br>
     
     <!-- RÉUNIONS -->
     <section class="dash-section">

@@ -83,6 +83,12 @@
           <button type="button" class="btn-back" (click)="goBack()">Annuler</button>
           <button type="button" class="btn-primary" (click)="onSubmit()">Enregistrer la Réunion</button>
         </div>
+
+        <!-- Section 4: Afficher les détails de l'erreur si existe (*ngIf) -->
+        <div *ngIf="backendError" style="margin-top: 1.5rem; padding: 1rem; background-color: var(--red-muted); color: var(--red); border: 1px solid var(--red); border-radius: var(--r-md);">
+          <strong>⚠️ Erreur du serveur :</strong>
+          <pre style="white-space: pre-wrap; font-family: inherit; margin-top: 0.5rem; font-size: 0.85rem;">{{ backendError }}</pre>
+        </div>
       </form>
     </div>
   </div>

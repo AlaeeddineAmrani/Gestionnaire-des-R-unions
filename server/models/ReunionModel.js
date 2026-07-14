@@ -16,7 +16,7 @@ class ReunionModel {
     static getReunionById(id, callback) {
         const query = 'SELECT * FROM reunion WHERE id_reunion = ?';
         db.query(query, [id], (err, result) => {
-            if (err){
+            if (err) {
                 console.error('Erreur lors de la récupération de la réunion :', err);
                 return callback(err, null);
             }
@@ -63,34 +63,101 @@ class ReunionModel {
 
 
     static updateReunion(id, reunionData, callback) {
-        let query = 'UPDATE reunion SET titre = ?, date_reunion = ?, heure_debut = ?, heure_fin_prevue = ?, heure_fin_reelle = ?, id_salle = ?';
-        
-        let values = [
-            reunionData.titre, 
-            reunionData.date_reunion, 
-            reunionData.heure_debut, 
-            reunionData.heure_fin_prevue, 
-            reunionData.heure_fin_reelle, 
-            reunionData.id_salle
-        ];
+        // ──────────────────────────────────────────────────────────────────────
+        // POURQUOI UNE TRANSACTION ?
+        // On touche deux tables différentes (reunion + point). Si l'une échoue,
+        // on ne veut pas laisser la BDD dans un état incohérent (réunion modifiée
+        // mais points non mis à jour). Un ROLLBACK annule tout.
+        // ──────────────────────────────────────────────────────────────────────
+        const db = require('../config/db');
 
-        // On vérifie si un Buffer binaire a été passé par le contrôleur
-        if (reunionData.pv_rapport) {
-            query += ', pv_rapport = ?'; // On ajoute la colonne à modifier
-            values.push(reunionData.pv_rapport); // On ajoute le Buffer dans les valeurs
-        }
+        db.getConnection((connErr, connection) => {
+            if (connErr) return callback(connErr, null);
 
-        // On termine la requête avec la clause WHERE
-        query += ' WHERE id_reunion = ?';
-        values.push(id); // L'ID se met toujours à la fin du tableau
+            connection.beginTransaction((txErr) => {
+                if (txErr) { connection.release(); return callback(txErr, null); }
 
-        // On exécute la requête finale 
-        db.query(query, values, (err, result) => {
-            if (err) {
-                console.error('Erreur SQL lors de la mise à jour de la réunion :', err);
-                return callback(err, null);
-            }
-            callback(null, result);
+                // ── ÉTAPE 1 : Mettre à jour les infos de base de la réunion ──
+                let query = 'UPDATE reunion SET titre = ?, date_reunion = ?, heure_debut = ?, heure_fin_prevue = ?, heure_fin_reelle = ?, id_salle = ?';
+                let values = [
+                    reunionData.titre,
+                    reunionData.date_reunion,
+                    reunionData.heure_debut,
+                    reunionData.heure_fin_prevue,
+                    reunionData.heure_fin_reelle,
+                    reunionData.id_salle
+                ];
+
+                if (reunionData.pv_rapport) {
+                    query += ', pv_rapport = ?';
+                    values.push(reunionData.pv_rapport);
+                }
+
+                query += ' WHERE id_reunion = ?';
+                values.push(id);
+
+                connection.query(query, values, (updateErr) => {
+                    if (updateErr) {
+                        return connection.rollback(() => {
+                            connection.release();
+                            callback(updateErr, null);
+                        });
+                    }
+
+                    // ── ÉTAPE 2 : Supprimer tous les anciens points ──────────
+                    // Stratégie "delete then reinsert" : plus simple que de
+                    // différencier les points créés / modifiés / supprimés.
+                    connection.query('DELETE FROM point WHERE id_reunion = ?', [id], (delErr) => {
+                        if (delErr) {
+                            return connection.rollback(() => {
+                                connection.release();
+                                callback(delErr, null);
+                            });
+                        }
+
+                        // ── ÉTAPE 3 : Réinsérer les nouveaux points ─────────
+                        const points = reunionData.points || [];
+
+                        if (points.length === 0) {
+                            // Pas de points → on commit directement
+                            return connection.commit((commitErr) => {
+                                connection.release();
+                                if (commitErr) return callback(commitErr, null);
+                                callback(null, { message: 'Réunion mise à jour (sans points).' });
+                            });
+                        }
+
+                        // Construction du tableau de valeurs pour l'INSERT multiple :
+                        // chaque ligne = [description, est_discute (0/1), id_reunion]
+                        const pointsValues = points.map(pt => [
+                            pt.description,
+                            pt.est_discute ? 1 : 0,
+                            id
+                        ]);
+
+                        // INSERT ... VALUES ? : MySQL accepte un tableau de tableaux
+                        // pour insérer plusieurs lignes en une seule requête.
+                        connection.query(
+                            'INSERT INTO point (description, est_discute, id_reunion) VALUES ?',
+                            [pointsValues],
+                            (insertErr) => {
+                                if (insertErr) {
+                                    return connection.rollback(() => {
+                                        connection.release();
+                                        callback(insertErr, null);
+                                    });
+                                }
+
+                                connection.commit((commitErr) => {
+                                    connection.release();
+                                    if (commitErr) return callback(commitErr, null);
+                                    callback(null, { message: 'Réunion et points mis à jour avec succès.' });
+                                });
+                            }
+                        );
+                    });
+                });
+            });
         });
     }
 
@@ -104,8 +171,8 @@ class ReunionModel {
             callback(null, result);
         });
     }
-    
-    
+
+
     static checkChevauchement(id_salle, date_reunion, heure_debut, heure_fin_prevue, allUsersIds, callback) {
         // La requête SQL vérifie deux choses qui chevauchent l'horaire prévu :
         // 1. Soit la salle est la même.
@@ -121,10 +188,10 @@ class ReunionModel {
 
         // Les paramètres remplacent les '?' dans l'ordre de la requête
         const params = [
-            date_reunion, 
+            date_reunion,
             heure_fin_prevue,  // r.heure_debut doit être AVANT la fin de la nouvelle
             heure_debut,       // r.heure_fin_prevue doit être APRÈS le début de la nouvelle
-            id_salle, 
+            id_salle,
             allUsersIds
         ];
 
@@ -267,6 +334,30 @@ class ReunionModel {
                 return callback(err, null);
             }
             callback(null, results);
+        });
+    }
+
+    // Récupère la prochaine réunion à venir pour l'utilisateur (la plus proche dans le futur)
+    static getNextReunion(id_utilisateur, callback) {
+        const query = `
+            SELECT r.id_reunion, r.titre, r.date_reunion, r.heure_debut, r.heure_fin_prevue, r.id_salle,
+                   IF(r.pv_rapport IS NOT NULL, 1, 0) AS pv_rapport
+            FROM reunion r
+            JOIN convoquer_interne c ON r.id_reunion = c.id_reunion
+            WHERE c.id_utilisateur = ? 
+              AND (r.date_reunion > CURDATE() OR (r.date_reunion = CURDATE() AND r.heure_debut >= CURTIME()))
+            ORDER BY r.date_reunion ASC, r.heure_debut ASC
+            LIMIT 1
+        `;
+        db.query(query, [id_utilisateur], (err, results) => {
+            if (err) {
+                console.error('Erreur lors de la récupération de la prochaine réunion :', err);
+                return callback(err, null);
+            }
+            if (results.length === 0) {
+                return callback(null, null); // Aucune réunion future trouvée
+            }
+            callback(null, results[0]);
         });
     }
 }

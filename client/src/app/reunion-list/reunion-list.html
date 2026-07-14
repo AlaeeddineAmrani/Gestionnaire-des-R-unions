@@ -60,8 +60,9 @@
                 <span style="color:var(--slate-300);font-size:.8rem" *ngIf="!reunion.pv_rapport">—</span>
               </td>
               <td class="td-actions">
-                <button class="btn-secondary" (click)="onEdit(reunion.id_reunion)">Modifier</button>
-                <button class="btn-danger" (click)="onDelete(reunion.id_reunion)">Supprimer</button>
+                <button class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" (click)="onView(reunion.id_reunion)">Voir</button>
+                <button class="btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" (click)="onEdit(reunion.id_reunion)">Modifier</button>
+                <button class="btn-danger" style="padding:0.4rem 0.8rem; font-size:0.8rem;" (click)="onDelete(reunion.id_reunion)">Supprimer</button>
               </td>
             </tr>
           }

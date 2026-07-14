@@ -11,7 +11,6 @@ import { SalleService, Salle } from '../services/salle';
   styleUrl: './salle-list.css',
 })
 export class SalleListComponent implements OnInit {
-
   private router = inject(Router);
   private salleService = inject(SalleService);
   private cdr = inject(ChangeDetectorRef);

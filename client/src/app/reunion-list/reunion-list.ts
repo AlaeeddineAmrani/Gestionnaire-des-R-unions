@@ -16,30 +16,35 @@ export class ReunionListComponent implements OnInit {
   private reunionService = inject(ReunionService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  // Permet de forcer la page à la maj après récéption des données...
   private cdr = inject(ChangeDetectorRef);
   
+  // Comme les States en React
   // Tableau qui va stocker les données reçues de l'API
   reunions: any[] = [];
   
-  // Variable pour gérer l'affichage pendant le chargement
+  // Variable pour gérer l'affichage pendant le chargement 
   isLoading = true;
   errorMessage = '';
 
-  // Cette fonction se lance toute seule au chargement du composant
+  // Cette fonction se lance toute seule au chargement du composant (like the useEffect hook in React)
   ngOnInit() {
+    // On fetch les réunions
     this.fetchReunions();
   }
 
+  // Fonction qui fetch les réunions de la base de données en utilisant le service qui consomme les routes du backend 
   fetchReunions() {
     const isAdmin = this.authService.isAdmin();
+    // Si ADMIN on affiche toutes les réunions si juste USER alors on lui affiche seulement ses propres réunions
     const fetchObservable = isAdmin ? this.reunionService.getAllReunions() : this.reunionService.getMyReunions();
 
     fetchObservable.subscribe({
       next: (data) => {
-        console.log('[DEBUG] Réunions reçues:', data);
-        this.reunions = data; // On stocke les données
+        //console.log('[DEBUG] Réunions reçues:', data);
+        this.reunions = data; // On stocke les données dans le tableau reunions
         this.isLoading = false; // On arrête le chargement
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); // Pour forcer le chargement de la page de nouveau
       },
       error: (err) => {
         console.error('Erreur lors du chargement des réunions', err);
@@ -50,6 +55,7 @@ export class ReunionListComponent implements OnInit {
     });
   }
 
+  // Fonction permet le téléchargement du pv quand le bouton télécharger du frontend est cliqué
   onDownloadPV(id: number) {
     this.reunionService.downloadPV(id).subscribe({
       next: (blob) => {
@@ -70,32 +76,44 @@ export class ReunionListComponent implements OnInit {
     });
   }
 
+  // Redirection vers la page des détails sur la réunion, appellée lors du clique sur le bouton voir du frontend
+  onView(id: number) {
+    this.router.navigate(['/view-reunion', id]);
+  }
 
+  // Redirection vers la page de modification de réunion quand le bouton modifier du frontend est cliqué
   onEdit(id: number) {
     this.router.navigate(['/edit-reunion', id]); 
   }
 
+  // Redirection vers la page d'ajout de réunion quand le bouton ajouter est cliqué
   goToAdd() {
     this.router.navigate(['/addreunion']);
   }
 
+  // Retourner vers le dashboard correspondant quand le bouton retourner est cliqué
   goBack() {
-    const dest = this.authService.isAdmin() ? '/admin-dashboard' : '/user-dashboard';
+    const isAdmin = this.authService.isAdmin();
+    // Si ADMIN alors redirection vers admin-dashboard sinon vers user-dashboard
+    const dest = isAdmin ? '/admin-dashboard' : '/user-dashboard';
     this.router.navigate([dest]);
   }
 
+  // Fonction pour supprimer une réunion de la base de données quand le bouton supprimer du frontend est cliqué
   onDelete(id: number) {
+    // Afficher une confirmation
     const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer cette réunion ?');
     
     if (confirmDelete) {
+      // Utilisant le service qui permet de consommer les routes du backend pour les réunions
       this.reunionService.deleteReunion(id).subscribe({
         next: (response) => {
-          // 1. Succès : On met à jour l'interface en retirant la réunion du tableau
+          // Succès : On met à jour l'interface en retirant la réunion du tableau (maj grace à ngOnInit)
           this.reunions = this.reunions.filter(reunion => reunion.id_reunion !== id);
           alert('Réunion supprimée avec succès !');
         },
         error: (err) => {
-          // 2. Erreur : On affiche un message
+          // Erreur : On affiche un message
           console.error('Erreur lors de la suppression', err);
           alert('Impossible de supprimer la réunion.');
         }

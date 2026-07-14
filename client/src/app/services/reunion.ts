@@ -60,4 +60,8 @@ export class ReunionService {
   getReunionDetails(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}/details`);
   }
+
+  getNextReunion(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/next`);
+  }
 }

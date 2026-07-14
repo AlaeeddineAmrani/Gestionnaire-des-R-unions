@@ -1,27 +1,27 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 1. Import FormsModule
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-auth',
-  imports: [FormsModule, CommonModule], // 2. Add it to the imports array
+  imports: [FormsModule, CommonModule], 
   templateUrl: './auth.html',
   styleUrl: './auth.css'
 })
 export class AuthComponent {
 
-  // Inject the Router service and auth (Think of this like const navigate = useNavigate())
+  // Inject the Router service and auth (like navigate = useNavigate())
   private router = inject(Router);
   private authService = inject(AuthService);
   
-  // 3. This is your "State"
+  // "State"
   email = '';
   mot_de_passe = '';
   errorMessage = '';
 
-  // 4. This is your submit handler
+  // Submit handler
   onSubmit() {
 
     this.errorMessage = '';

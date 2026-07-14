@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID } from '@angular/core';
 
 /**
+ * Crée avec: ng g interceptor mon-intercepteur
  * Intercepteur HTTP fonctionnel.
  *
  * Ajoute automatiquement le header `Authorization: Bearer <token>`

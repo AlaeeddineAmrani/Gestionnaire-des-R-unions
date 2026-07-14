@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReunionService } from '../services/reunion';
 
@@ -39,10 +39,10 @@ export class ViewReunionComponent implements OnInit {
     }
   }
 
+  private location = inject(Location);
+
   goBack() {
-    this.router.navigate(['/search'], {
-      queryParams: { q: history.state?.query || '' }
-    });
+    this.location.back();
   }
 
   goBackDashboard() {

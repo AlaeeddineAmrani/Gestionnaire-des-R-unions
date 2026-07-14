@@ -1,21 +1,27 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router'; // ActivatedRoute est le radar de l'URL
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReunionService } from '../services/reunion';
+
+// Interface locale pour typer chaque point
+interface Point {
+  description: string;
+  est_discute: boolean;
+}
 
 @Component({
   selector: 'app-edit-reunion',
   imports: [CommonModule, FormsModule],
   templateUrl: './edit-reunion.html',
-  styleUrl: './edit-reunion.css' 
+  styleUrl: './edit-reunion.css'
 })
 export class EditReunionComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private reunionService = inject(ReunionService);
 
-  // 1. Initialisation des variables (qui sont liées au HTML via ngModel)
+  // ── Champs de base de la réunion ──────────────────────────────────────────
   id_reunion: number = 0;
   titre = '';
   date_reunion = '';
@@ -23,112 +29,116 @@ export class EditReunionComponent implements OnInit {
   heure_fin_prevue = '';
   heure_fin_reelle = '';
   id_salle: number | null = null;
-  id_utilisateur: number = 0;
-  fichierExistant = false; // Petit booléen pour l'affichage UI du fichier
+  fichierExistant = false;
+  fichierSelectionne: File | null = null;
+  minDate = '';
+
+  // ── Points de l'ordre du jour ─────────────────────────────────────────────
+  // C'est un tableau d'objets simples { description, est_discute }
+  points: Point[] = [];
+
+  // ── Champ pour saisir un nouveau point ───────────────────────────────────
+  // On utilise un champ temporaire "en cours de saisie", séparé du tableau.
+  nouveauPoint = '';
+
+  // ── Gestion des erreurs ───────────────────────────────────────────────────
+  errorMessage = '';
 
   ngOnInit() {
-    // MISSION 1 : Intercepter l'ID dans l'URL
     const idParam = this.route.snapshot.paramMap.get('id');
-    
-    if (idParam) {
-      this.id_reunion = Number(idParam);
-      
-      // MISSION 2 : Le GET initial pour pré-remplir le formulaire
-      this.reunionService.getReunionById(this.id_reunion).subscribe({
-        next: (data) => {
-          
-          // Récuperer la réunion
-          const reunion = data[0]; 
+    if (!idParam) return;
 
-          // Affectation des variables => Le HTML va se remplir tout seul !
-          this.titre = reunion.titre;
-          
-          // Formatage de la date (MySQL renvoie souvent un format complet avec l'heure, l'input type="date" n'accepte que YYYY-MM-DD)
-          this.date_reunion = reunion.date_reunion.split('T')[0]; 
-          
-          this.heure_debut = reunion.heure_debut;
-          this.heure_fin_prevue = reunion.heure_fin_prevue;
-          this.heure_fin_reelle = reunion.heure_fin_reelle || '';
-          this.id_salle = reunion.id_salle;
-          this.id_utilisateur = reunion.id_utilisateur;
-          
-          // S'il y a déjà un blob/fichier en base, on informe l'utilisateur
-          if (reunion.pv_rapport) {
-            this.fichierExistant = true;
-          }
-        },
-        error: (err) => {
-          console.error("Erreur de récupération :", err);
-          alert("Impossible de charger les données de la réunion.");
-          this.router.navigate(['/dashboard']);
-        }
-      });
-    }
+    this.id_reunion = Number(idParam);
+
+    // ── POURQUOI getReunionDetails et pas getReunionById ? ────────────────
+    // getReunionById retourne juste la ligne de la table `reunion`.
+    // getReunionDetails fait une JOIN avec `point` et retourne aussi les points.
+    // C'est exactement ce dont on a besoin pour pré-remplir le formulaire.
+    this.reunionService.getReunionDetails(this.id_reunion).subscribe({
+      next: (data) => {
+        this.titre             = data.titre;
+        this.date_reunion      = data.date_reunion.split('T')[0];
+        this.heure_debut       = data.heure_debut;
+        this.heure_fin_prevue  = data.heure_fin_prevue;
+        this.heure_fin_reelle  = data.heure_fin_reelle || '';
+        this.id_salle          = data.id_salle;
+        this.fichierExistant   = !!data.pv_rapport;
+
+        // Pré-remplir les points :
+        // data.points = [{ id_point, description, est_discute }, ...]
+        // On map vers notre interface locale { description, est_discute (boolean) }
+        this.points = (data.points || []).map((p: any) => ({
+          description: p.description,
+          est_discute: !!p.est_discute   // MySQL retourne 0/1 → on convertit en boolean
+        }));
+      },
+      error: (err) => {
+        console.error('Erreur de chargement :', err);
+        this.errorMessage = 'Impossible de charger les données de la réunion.';
+      }
+    });
   }
 
-  minDate = '';
-  fichierSelectionne: File | null = null; // Stockera le fichier uploadé
+  // ── Gestion des points ────────────────────────────────────────────────────
 
-  // --- MISSION 5 (Partie 1) : Capturer le fichier ---
+  /** Ajoute un nouveau point vide à la liste */
+  ajouterPoint() {
+    const desc = this.nouveauPoint.trim();
+    if (!desc) return;
+    this.points.push({ description: desc, est_discute: false });
+    this.nouveauPoint = '';   // Réinitialise le champ de saisie
+  }
+
+  /** Supprime un point par son index dans le tableau */
+  supprimerPoint(index: number) {
+    this.points.splice(index, 1);
+  }
+
+  /** Capture le fichier sélectionné */
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
-    if (file) {
-      this.fichierSelectionne = file;
-    }
+    if (file) this.fichierSelectionne = file;
   }
 
-  // --- MISSIONS 4 & 5 : Validation et Envoi ---
+  // ── Soumission du formulaire ──────────────────────────────────────────────
   onSubmit() {
-    // 1. Vérification des champs obligatoires
+    this.errorMessage = '';
+
+    // Validation des champs obligatoires
     if (!this.titre || !this.date_reunion || !this.heure_debut || !this.heure_fin_prevue || !this.id_salle) {
-      alert('Veuillez remplir tous les champs obligatoires.');
+      this.errorMessage = 'Veuillez remplir tous les champs obligatoires.';
       return;
     }
 
-    // 2. MISSION 4 : Validation stricte de l'heure
-    if (this.date_reunion === this.minDate) {
-      // Si la réunion est aujourd'hui, on vérifie l'heure actuelle
-      const now = new Date();
-      const currentHour = String(now.getHours()).padStart(2, '0');
-      const currentMinute = String(now.getMinutes()).padStart(2, '0');
-      const currentTime = `${currentHour}:${currentMinute}`;
-
-      if (this.heure_debut < currentTime) {
-        alert("Impossible de planifier une réunion à une heure déjà passée aujourd'hui.");
-        return;
-      }
-    }
-
-    // L'heure de fin doit toujours être après l'heure de début
     if (this.heure_fin_prevue <= this.heure_debut) {
-      alert("L'heure de fin prévue doit être ultérieure à l'heure de début.");
+      this.errorMessage = "L'heure de fin prévue doit être ultérieure à l'heure de début.";
       return;
     }
 
-    // 3. MISSION 5 : Création du paquet de données avec FormData
+    // ── POINT CLÉ : Sérialisation des points ─────────────────────────────
+    // FormData ne peut envoyer que des chaînes ou des fichiers.
+    // Pour envoyer un tableau d'objets, on le sérialise avec JSON.stringify.
+    // Côté serveur (controller), on fera JSON.parse(req.body.points).
     const formData = new FormData();
-    formData.append('titre', this.titre);
-    formData.append('date_reunion', this.date_reunion);
-    formData.append('heure_debut', this.heure_debut);
+    formData.append('titre',            this.titre);
+    formData.append('date_reunion',     this.date_reunion);
+    formData.append('heure_debut',      this.heure_debut);
     formData.append('heure_fin_prevue', this.heure_fin_prevue);
     formData.append('heure_fin_reelle', this.heure_fin_reelle || '');
-    formData.append('id_salle', this.id_salle.toString());
-    formData.append('id_utilisateur', this.id_utilisateur.toString());
-    
-    // Si un nouveau fichier a été sélectionné, on l'ajoute dans le colis
+    formData.append('id_salle',         this.id_salle!.toString());
+    formData.append('points',           JSON.stringify(this.points));  // ← sérialisation
+
     if (this.fichierSelectionne) {
       formData.append('pv_rapport', this.fichierSelectionne);
     }
 
-    // 4. Appel au service (Il faudra créer cette méthode dans reunion.service.ts !)
     this.reunionService.updateReunion(this.id_reunion, formData).subscribe({
-      next: (response) => {
-        alert('Réunion modifiée avec succès !');
+      next: () => {
         this.router.navigate(['/getreunions']);
       },
       error: (err) => {
         console.error('Erreur de modification', err);
-        alert('Erreur lors de la modification de la réunion.');
+        this.errorMessage = err.error?.message || 'Erreur lors de la modification de la réunion.';
       }
     });
   }
