@@ -161,17 +161,58 @@ class ReunionModel {
         });
     }
 
+    // Transaction pour supprimer les enfants puis les parents, pour ne pas avoir une erreur de suppression  des données orphelines
     static deleteReunion(id, callback) {
-        const query = 'DELETE FROM reunion WHERE id_reunion = ?';
-        db.query(query, [id], (err, result) => {
-            if (err) {
-                console.error('Erreur lors de la suppression de la réunion :', err);
-                return callback(err, null);
-            }
-            callback(null, result);
+        const db = require('../config/db');
+
+        db.getConnection((connErr, connection) => {
+            if (connErr) return callback(connErr, null);
+
+            connection.beginTransaction((txErr) => {
+                if (txErr) { connection.release(); return callback(txErr, null); }
+
+                // ── ÉTAPE 1 : Supprimer les points liés à la réunion ─────────
+                // On doit d'abord supprimer les enfants avant le parent
+                // (contrainte de clé étrangère FK).
+                connection.query('DELETE FROM point WHERE id_reunion = ?', [id], (err1) => {
+                    if (err1) {
+                        return connection.rollback(() => {
+                            connection.release();
+                            callback(err1, null);
+                        });
+                    }
+
+                    // ── ÉTAPE 2 : Supprimer les convocations liées ───────────
+                    connection.query('DELETE FROM convoquer_interne WHERE id_reunion = ?', [id], (err2) => {
+                        if (err2) {
+                            return connection.rollback(() => {
+                                connection.release();
+                                callback(err2, null);
+                            });
+                        }
+
+                        // ── ÉTAPE 3 : Supprimer la réunion elle-même ─────────
+                        // Le parent peut maintenant être supprimé sans conflit.
+                        connection.query('DELETE FROM reunion WHERE id_reunion = ?', [id], (err3, result) => {
+                            if (err3) {
+                                return connection.rollback(() => {
+                                    connection.release();
+                                    callback(err3, null);
+                                });
+                            }
+
+                            // Tout réussi alors on commit
+                            connection.commit((commitErr) => {
+                                connection.release();
+                                if (commitErr) return callback(commitErr, null);
+                                callback(null, result);
+                            });
+                        });
+                    });
+                });
+            });
         });
     }
-
 
     static checkChevauchement(id_salle, date_reunion, heure_debut, heure_fin_prevue, allUsersIds, callback) {
         // La requête SQL vérifie deux choses qui chevauchent l'horaire prévu :

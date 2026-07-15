@@ -146,71 +146,105 @@ const createReunion = (req, res) => {
 };
 
 const updateReunion = (req, res) => {
-    const id = req.params.id;
+    const id_reunion = req.params.id;
+    const appelant = req.user;
 
-    // 1. Les champs texte envoyés par FormData se retrouvent dans req.body
-    const { titre, date_reunion, heure_debut, heure_fin_prevue, heure_fin_reelle, id_salle } = req.body;
+    // Logique commune : parser le body et préparer reunionData
+    const execUpdate = () => {
+        const { titre, date_reunion, heure_debut, heure_fin_prevue, heure_fin_reelle, id_salle } = req.body;
 
-    // ─── POINT IMPORTANT : FormData envoie TOUT en string ───────────────
-    // Les points sont envoyés comme JSON.stringify([...]) côté Angular.
-    // On doit les parser ici pour retrouver le tableau d'objets.
-    let points = [];
-    try {
-        if (req.body.points) {
-            points = JSON.parse(req.body.points);
+        let points = [];
+        try {
+            if (req.body.points) points = JSON.parse(req.body.points);
+        } catch (parseErr) {
+            return res.status(400).json({ message: 'Format des points invalide.' });
         }
-    } catch (parseErr) {
-        console.error('Erreur de parsing des points :', parseErr);
-        return res.status(400).json({ message: 'Format des points invalide.' });
-    }
 
-    // 2. On prépare l'objet de données pour le modèle
-    let reunionData = {
-        titre,
-        date_reunion,
-        heure_debut,
-        heure_fin_prevue,
-        heure_fin_reelle: heure_fin_reelle || null,
-        id_salle: parseInt(id_salle),
-        pv_rapport: null,
-        points  // <- tableau d'objets { description, est_discute }
+        let reunionData = {
+            titre, date_reunion, heure_debut, heure_fin_prevue,
+            heure_fin_reelle: heure_fin_reelle || null,
+            id_salle: parseInt(id_salle),
+            pv_rapport: null,
+            points
+        };
+
+        if (req.file) {
+            try {
+                reunionData.pv_rapport = fs.readFileSync(req.file.path);
+                fs.unlinkSync(req.file.path);
+            } catch (fileError) {
+                return res.status(500).json({ message: "Erreur lors du traitement du fichier PV." });
+            }
+        }
+
+        ReunionModel.updateReunion(id_reunion, reunionData, (err) => {
+            if (err) return res.status(500).json({ message: "Erreur lors de la modification de la réunion", error: err });
+            res.status(200).json({ message: "Réunion modifiée avec succès" });
+        });
     };
 
-    // 3. Si un nouveau fichier a été téléchargé
-    if (req.file) {
-        try {
-            const binaryData = fs.readFileSync(req.file.path);
-            reunionData.pv_rapport = binaryData;
-            fs.unlinkSync(req.file.path);
-        } catch (fileError) {
-            console.error("Erreur lors de la lecture du fichier :", fileError);
-            return res.status(500).json({ message: "Erreur lors du traitement du fichier PV." });
-        }
+    // ── Cas 1 : Admin → accès direct ─────────────────────────────────────────
+    if (appelant.role && appelant.role.toUpperCase() === 'ADMIN') {
+        return execUpdate();
     }
 
-    // 4. On appelle le modèle
-    ReunionModel.updateReunion(id, reunionData, (err, result) => {
-        if (err) {
-            return res.status(500).json({
-                message: "Erreur lors de la modification de la réunion",
-                error: err
-            });
-        }
+    // ── Cas 2 : User normal → doit être ORGANISATEUR ──────────────────────────
+    const checkQuery = `
+        SELECT role_reunion FROM convoquer_interne
+        WHERE id_reunion = ? AND id_utilisateur = ?
+    `;
+    db.query(checkQuery, [id_reunion, appelant.id_utilisateur], (err, rows) => {
+        if (err) return res.status(500).json({ message: "Erreur lors de la vérification du rôle", error: err });
 
-        res.status(200).json({ message: "Réunion modifiée avec succès" });
+        if (!rows || rows.length === 0)
+            return res.status(403).json({ message: "Vous n'êtes pas impliqué dans cette réunion." });
+
+        if (rows[0].role_reunion !== 'ORGANISATEUR')
+            return res.status(403).json({ message: "Seul l'organisateur peut modifier cette réunion." });
+
+        execUpdate();
     });
 };
 
+
+//  Transaction pour supprimer les enfants puis les parents, pour ne pas avoir une erreur de suppression  des données orphelines
 const deleteReunion = (req, res) => {
-    const id = req.params.id;
-    ReunionModel.deleteReunion(id, (err, result) => {
+    const id_reunion = req.params.id;
+    const appelant = req.user; // injecté par authMiddleware (contient id_utilisateur + role)
+    // ── Cas 1 : L'admin a tous les droits ────────────────────────────────────
+    if (appelant.role && appelant.role.toUpperCase() === 'ADMIN') {
+        return ReunionModel.deleteReunion(id_reunion, (err) => {
+            if (err) return res.status(500).json({ message: "Erreur lors de la suppression", error: err });
+            res.status(200).json({ message: "Réunion supprimée avec succès (admin)" });
+        });
+    }
+    // ── Cas 2 : User normal → vérifier qu'il est ORGANISATEUR ────────────────
+    // On interroge convoquer_interne pour voir son rôle dans cette réunion.
+    const checkQuery = `
+        SELECT role_reunion
+        FROM convoquer_interne
+        WHERE id_reunion = ? AND id_utilisateur = ?
+    `;
+    db.query(checkQuery, [id_reunion, appelant.id_utilisateur], (err, rows) => {
         if (err) {
-            return res.status(500).json({
-                message: "Erreur lors de la suppression de la réunion",
-                error: err
+            return res.status(500).json({ message: "Erreur lors de la vérification du rôle", error: err });
+        }
+        // L'utilisateur n'est pas dans cette réunion du tout
+        if (!rows || rows.length === 0) {
+            return res.status(403).json({ message: "Vous n'êtes pas impliqué dans cette réunion." });
+        }
+        const role = rows[0].role_reunion;
+        // Il est juste participant → interdit
+        if (role !== 'ORGANISATEUR') {
+            return res.status(403).json({
+                message: "Seul l'organisateur peut supprimer cette réunion."
             });
         }
-        res.status(200).json({ message: "Réunion supprimée avec succès" });
+        // Il est bien organisateur → on supprime
+        ReunionModel.deleteReunion(id_reunion, (err2) => {
+            if (err2) return res.status(500).json({ message: "Erreur lors de la suppression", error: err2 });
+            res.status(200).json({ message: "Réunion supprimée avec succès" });
+        });
     });
 };
 
@@ -260,29 +294,42 @@ const getReunionByPointId = (req, res) => {
     });
 };
 
-const downloadPV = (req, res) => {
+const showPV = (req, res) => {
     const id = req.params.id;
     ReunionModel.getReunionById(id, (err, result) => {
-        if (err) {
-            return res.status(500).json({
-                message: "Erreur lors de la récupération de la réunion",
-                error: err
-            });
-        }
-
-        if (!result || result.length === 0) {
-            return res.status(404).json({ message: "Réunion non trouvée" });
-        }
+        if (err) return res.status(500).json({ message: "Erreur lors de la récupération de la réunion", error: err });
+        if (!result || result.length === 0) return res.status(404).json({ message: "Réunion non trouvée" });
 
         const reunion = result[0];
-        if (!reunion.pv_rapport) {
-            return res.status(404).json({ message: "Aucun PV associé à cette réunion" });
+        if (!reunion.pv_rapport) return res.status(404).json({ message: "Aucun PV associé à cette réunion" });
+
+        const buffer = Buffer.from(reunion.pv_rapport);
+
+        // ── Détection du type de fichier par les "magic bytes" ────────────────
+        // Chaque format de fichier commence par une séquence d'octets connue.
+        // On lit les 4 premiers octets pour identifier le vrai format,
+        // sans se fier à l'extension (qui peut être fausse ou absente).
+        let mimeType = 'application/octet-stream'; // type générique par défaut
+        let extension = 'bin';
+
+        if (buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46) {
+            // %PDF → PDF
+            mimeType = 'application/pdf';
+            extension = 'pdf';
+        } else if (buffer[0] === 0x50 && buffer[1] === 0x4B) {
+            // PK → ZIP / DOCX / XLSX (Office Open XML)
+            mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            extension = 'docx';
+        } else if (buffer[0] === 0xD0 && buffer[1] === 0xCF) {
+            // D0CF → anciens formats Office (.doc, .xls)
+            mimeType = 'application/msword';
+            extension = 'doc';
         }
 
-        // Le fichier est stocké en LONGBLOB
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=pv_reunion_${id}.pdf`);
-        res.send(reunion.pv_rapport);
+        // inline → le navigateur l'ouvre dans l'onglet, pas de téléchargement forcé
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Disposition', `inline; filename=pv_reunion_${id}.${extension}`);
+        res.send(buffer);
     });
 };
 
@@ -323,9 +370,9 @@ module.exports = {
     updateReunion,
     deleteReunion,
     getMyReunions,
-    downloadPV,
+    showPV,
     searchPoints,
     getReunionByPointId,
     getReunionDetails,
     getNextReunion
-};
+};

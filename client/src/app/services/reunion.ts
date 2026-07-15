@@ -19,7 +19,7 @@ export class ReunionService {
     return this.http.post(this.apiUrl, reunionData);
   }
 
-  // Delete réunion
+  // Delete une réunion
   deleteReunion(reunionID: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${reunionID}`);
   }

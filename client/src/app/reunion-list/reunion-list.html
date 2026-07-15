@@ -54,8 +54,8 @@
               <td>{{ reunion.heure_debut?.substring(0,5) }} – {{ reunion.heure_fin_prevue?.substring(0,5) }}</td>
               <td>Salle {{ reunion.id_salle }}</td>
               <td>
-                <button class="btn-success" *ngIf="reunion.pv_rapport" (click)="onDownloadPV(reunion.id_reunion)">
-                  ↓ PV
+                <button class="btn-success" *ngIf="reunion.pv_rapport" (click)="onShowPV(reunion.id_reunion)">
+                  👁 Voir PV
                 </button>
                 <span style="color:var(--slate-300);font-size:.8rem" *ngIf="!reunion.pv_rapport">—</span>
               </td>

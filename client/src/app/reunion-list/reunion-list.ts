@@ -18,11 +18,11 @@ export class ReunionListComponent implements OnInit {
   private router = inject(Router);
   // Permet de forcer la page à la maj après récéption des données...
   private cdr = inject(ChangeDetectorRef);
-  
+
   // Comme les States en React
   // Tableau qui va stocker les données reçues de l'API
   reunions: any[] = [];
-  
+
   // Variable pour gérer l'affichage pendant le chargement 
   isLoading = true;
   errorMessage = '';
@@ -55,25 +55,13 @@ export class ReunionListComponent implements OnInit {
     });
   }
 
-  // Fonction permet le téléchargement du pv quand le bouton télécharger du frontend est cliqué
-  onDownloadPV(id: number) {
-    this.reunionService.downloadPV(id).subscribe({
-      next: (blob) => {
-        // Créer un lien temporaire pour forcer le téléchargement du fichier
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `pv_reunion_${id}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error('Erreur lors du téléchargement du PV', err);
-        alert('Impossible de télécharger le PV.');
-      }
-    });
+  // Ouvre le PV dans un nouvel onglet du navigateur
+  onShowPV(id: number) {
+    // On construit l'URL directe vers l'endpoint /pv du backend.
+    // Le navigateur recevra Content-Disposition: inline et l'affichera directement.
+    // Plus besoin de passer par un Blob côté Angular !
+    const url = `http://localhost:3000/api/reunions/${id}/pv`;
+    window.open(url, '_blank');
   }
 
   // Redirection vers la page des détails sur la réunion, appellée lors du clique sur le bouton voir du frontend
@@ -83,7 +71,7 @@ export class ReunionListComponent implements OnInit {
 
   // Redirection vers la page de modification de réunion quand le bouton modifier du frontend est cliqué
   onEdit(id: number) {
-    this.router.navigate(['/edit-reunion', id]); 
+    this.router.navigate(['/edit-reunion', id]);
   }
 
   // Redirection vers la page d'ajout de réunion quand le bouton ajouter est cliqué
@@ -101,21 +89,18 @@ export class ReunionListComponent implements OnInit {
 
   // Fonction pour supprimer une réunion de la base de données quand le bouton supprimer du frontend est cliqué
   onDelete(id: number) {
-    // Afficher une confirmation
     const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer cette réunion ?');
-    
+
     if (confirmDelete) {
-      // Utilisant le service qui permet de consommer les routes du backend pour les réunions
       this.reunionService.deleteReunion(id).subscribe({
-        next: (response) => {
-          // Succès : On met à jour l'interface en retirant la réunion du tableau (maj grace à ngOnInit)
+        next: () => {
           this.reunions = this.reunions.filter(reunion => reunion.id_reunion !== id);
-          alert('Réunion supprimée avec succès !');
         },
         error: (err) => {
-          // Erreur : On affiche un message
           console.error('Erreur lors de la suppression', err);
-          alert('Impossible de supprimer la réunion.');
+          // On affiche le message précis renvoyé par le serveur (ex: 403 interdit)
+          const msg = err.error?.message || 'Impossible de supprimer la réunion.';
+          alert(msg);
         }
       });
     }
