@@ -57,11 +57,19 @@ export class ReunionListComponent implements OnInit {
 
   // Ouvre le PV dans un nouvel onglet du navigateur
   onShowPV(id: number) {
-    // On construit l'URL directe vers l'endpoint /pv du backend.
-    // Le navigateur recevra Content-Disposition: inline et l'affichera directement.
-    // Plus besoin de passer par un Blob côté Angular !
-    const url = `http://localhost:3000/api/reunions/${id}/pv`;
-    window.open(url, '_blank');
+    // window.open(url) DIRECT est impossible ici :
+    // le navigateur ne peut pas joindre le header Authorization à une navigation normale.
+    // → On passe par Angular HttpClient qui, lui, attache le token JWT via l'interceptor.
+    // Une fois le Blob reçu, on crée une URL temporaire locale (blob:...) et on l'ouvre.
+    this.reunionService.downloadPV(id).subscribe({
+      next: (blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+        // Note : on ne révoque pas l'URL immédiatement pour laisser le temps à l'onglet de charger.
+        // Elle sera libérée automatiquement à la fermeture de la page.
+      },
+      error: () => alert('Impossible d\'ouvrir le PV. Vérifiez qu\'un fichier est bien associé.')
+    });
   }
 
   // Redirection vers la page des détails sur la réunion, appellée lors du clique sur le bouton voir du frontend

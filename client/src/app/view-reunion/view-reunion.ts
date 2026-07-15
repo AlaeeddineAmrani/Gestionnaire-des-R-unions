@@ -51,12 +51,24 @@ export class ViewReunionComponent implements OnInit {
 
   downloadPV() {
     if (this.reunion?.id_reunion) {
-      this.reunionService.downloadPV(this.reunion.id_reunion).subscribe({
-        next: (blob) => {
+      // On demande la réponse HTTP complète (observe: 'response') pour accéder aux headers.
+      // Le serveur renvoie le bon Content-Type (application/pdf, application/vnd...docx, etc.)
+      // grâce à la détection par magic bytes côté backend.
+      this.reunionService.downloadPVWithHeaders(this.reunion.id_reunion).subscribe({
+        next: (response) => {
+          const blob = response.body!;
+          const contentType = response.headers.get('Content-Type') || '';
+
+          // On mappe le MIME type vers une extension lisible
+          let extension = 'bin';
+          if (contentType.includes('pdf'))  extension = 'pdf';
+          else if (contentType.includes('wordprocessingml')) extension = 'docx';
+          else if (contentType.includes('msword'))          extension = 'doc';
+
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `pv_reunion_${this.reunion.id_reunion}.pdf`;
+          a.download = `pv_reunion_${this.reunion.id_reunion}.${extension}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);

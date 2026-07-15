@@ -39,9 +39,17 @@ export class ReunionService {
     return this.http.get<any[]>(`${this.apiUrl}/my`);
   }
 
-  // Télécharger le PV d'une réunion (retourne un Blob)
+  // Télécharger le PV (retourne un Blob brut — utilisé par reunion-list)
   downloadPV(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}/pv`, { responseType: 'blob' });
+  }
+
+  // Télécharger le PV avec les headers HTTP complets (utilisé par view-reunion pour lire Content-Type)
+  downloadPVWithHeaders(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}/pv`, {
+      responseType: 'blob',
+      observe: 'response'   // ← retourne HttpResponse<Blob> au lieu de juste Blob
+    });
   }
 
   // Rechercher des points par mot(s) clé(s)
