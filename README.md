@@ -57,7 +57,7 @@
 
 ## 🔭 About The Project
 
-**Gestionnaire des Réunions** is a full-stack web application developed during an internship at **INE1** (Institut National d'Électricité et d'Électronique). It provides a complete meeting management solution for organizations, covering the entire lifecycle of a meeting — from scheduling and participant invitation to agenda tracking and report generation.
+**Gestionnaire des Réunions** is a full-stack web application developed during an **INE1** (Ingénieur d'État 1ère année) internship at the **Commune de Berkane**, as part of the curriculum at **INPT** (Institut National des Postes et Télécommunications), Rabat, Morocco. It provides a complete meeting management solution for the commune, covering the entire lifecycle of a meeting — from scheduling and participant invitation to agenda tracking and report generation.
 
 The application addresses key organizational challenges:
 
@@ -212,7 +212,7 @@ The application addresses key organizational challenges:
 
 ### 👥 User Management
 
-> *Admin-only interface for managing users: create accounts, assign roles (Admin/User), link to a service, and manage credentials.*
+> *Admin-only interface for managing users: create accounts, link to a service, and manage credentials.*
 
 ![User Management](./screenshots/user-management.png)
 
@@ -700,13 +700,15 @@ Please follow the [Conventional Commits](https://www.conventionalcommits.org/) s
   </tr>
 </table>
 
-**Internship at:** INE1 — Institut National d'Électricité et d'Électronique
+**School:** INPT — Institut National des Postes et Télécommunications, Rabat
+**Internship at:** Commune de Berkane
+**Level:** INE1 — Ingénieur d'État 1ère année
 
 ---
 
 <div align="center">
 
-Made with ❤️ during an internship at **INE1**
+Made with ❤️ during an INE1 internship at the **Commune de Berkane** — **INPT**, Rabat, Morocco
 
 *Année académique 2025/2026*
 
