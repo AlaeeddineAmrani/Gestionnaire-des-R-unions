@@ -93,16 +93,37 @@ export class AddReunionComponent implements OnInit {
       error: (err) => {
         console.error(err);
         if (err.status === 409) {
-          this.backendError = err.error.message;
-          if (err.error.details) {
-            this.backendError += " (Conflit détecté pour certains participants ou salle)";
+          // Le backend renvoie un tableau `conflits` structuré avec noms et horaires
+          const conflits: any[] = err.error?.conflits || [];
+
+          if (conflits.length === 0) {
+            this.backendError = '⚠️ Conflit détecté : la salle ou un participant est déjà occupé à cet horaire.';
+          } else {
+            // On construit un message lisible pour chaque réunion conflictuelle
+            const lignes = conflits.map((c: any) => {
+              const parties: string[] = [];
+
+              if (c.salleDejaReservee) {
+                parties.push(`🏢 La salle est déjà réservée`);
+              }
+
+              if (c.personnesOccupees && c.personnesOccupees.length > 0) {
+                const noms = c.personnesOccupees.join(', ');
+                parties.push(`👤 Participant(s) indisponible(s) : ${noms}`);
+              }
+
+              return `📌 "${c.titre}" (${c.horaire})\n   ${parties.join('\n   ')}`;
+            });
+
+            this.backendError = `⚠️ Impossible de créer la réunion — conflit(s) détecté(s) :\n\n${lignes.join('\n\n')}`;
           }
+
         } else {
-          this.backendError = err.error?.message || 'Une erreur est survenue lors de la création.';
+          this.backendError = err.error?.message || 'La création de la réunion a échoué. Vérifiez les informations saisies puis réessayez.';
           if (err.error?.error?.sqlMessage) {
-            this.backendError += `\nDétail SQL: ${err.error.error.sqlMessage}`;
+            this.backendError += `\nDétail technique : ${err.error.error.sqlMessage}`;
           } else if (err.error?.error) {
-            this.backendError += `\nDétails: ${JSON.stringify(err.error.error)}`;
+            this.backendError += `\nDétail technique : ${JSON.stringify(err.error.error)}`;
           }
         }
         this.cdr.detectChanges();

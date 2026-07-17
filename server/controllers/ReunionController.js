@@ -45,9 +45,41 @@ const createReunion = (req, res) => {
         }
 
         if (overlaps && overlaps.length > 0) {
+            // ── Construire un rapport de conflit lisible ──────────────────────
+            // Les résultats peuvent contenir plusieurs lignes pour la même réunion
+            // (une par participant). On déduplique et on groupe par type de conflit.
+
+            const formatTime = (t) => t ? t.substring(0, 5) : '?';
+
+            // Réunions conflictuelles distinctes (par id_reunion)
+            const reunionsConflitMap = new Map();
+            overlaps.forEach(row => {
+                if (!reunionsConflitMap.has(row.id_reunion)) {
+                    reunionsConflitMap.set(row.id_reunion, {
+                        titre: row.titre_reunion_conflit,
+                        horaire: `${formatTime(row.heure_debut_conflit)} – ${formatTime(row.heure_fin_conflit)}`,
+                        salleConflit: row.id_salle == id_salle,
+                        personnesOccupees: new Set()
+                    });
+                }
+                if (row.nom_utilisateur && allUsers.includes(Number(row.id_utilisateur))) {
+                    reunionsConflitMap.get(row.id_reunion).personnesOccupees.add(
+                        `${row.prenom_utilisateur} ${row.nom_utilisateur}`
+                    );
+                }
+            });
+
+            // Convertir en tableau sérialisable (Set → Array)
+            const conflits = Array.from(reunionsConflitMap.values()).map(c => ({
+                titre: c.titre,
+                horaire: c.horaire,
+                salleDejaReservee: c.salleConflit,
+                personnesOccupees: Array.from(c.personnesOccupees)
+            }));
+
             return res.status(409).json({
-                message: "Conflit détecté. La salle ou certains participants sont déjà occupés.",
-                details: overlaps
+                message: "Impossible de créer la réunion : des conflits ont été détectés.",
+                conflits
             });
         }
 

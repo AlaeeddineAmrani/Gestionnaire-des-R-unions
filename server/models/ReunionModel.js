@@ -215,23 +215,32 @@ class ReunionModel {
     }
 
     static checkChevauchement(id_salle, date_reunion, heure_debut, heure_fin_prevue, allUsersIds, callback) {
-        // La requête SQL vérifie deux choses qui chevauchent l'horaire prévu :
-        // 1. Soit la salle est la même.
-        // 2. Soit l'un des utilisateurs (IN) fait déjà partie d'une autre réunion à ce moment-là.
+        // La requête enrichie retourne :
+        //   - les infos de la réunion conflictuelle (titre, date, heures)
+        //   - l'id ET le nom/prénom de la personne occupée (JOIN utilisateur)
+        //   - l'id de la salle conflictuelle
         const query = `
-            SELECT r.id_reunion, r.titre, r.id_salle, c.id_utilisateur 
+            SELECT
+                r.id_reunion,
+                r.titre          AS titre_reunion_conflit,
+                r.heure_debut    AS heure_debut_conflit,
+                r.heure_fin_prevue AS heure_fin_conflit,
+                r.id_salle,
+                c.id_utilisateur,
+                u.nom            AS nom_utilisateur,
+                u.prenom         AS prenom_utilisateur
             FROM reunion r
             LEFT JOIN convoquer_interne c ON r.id_reunion = c.id_reunion
+            LEFT JOIN utilisateur u ON c.id_utilisateur = u.id_utilisateur
             WHERE r.date_reunion = ?
             AND (r.heure_debut < ? AND r.heure_fin_prevue > ?)
             AND (r.id_salle = ? OR c.id_utilisateur IN (?))
         `;
 
-        // Les paramètres remplacent les '?' dans l'ordre de la requête
         const params = [
             date_reunion,
-            heure_fin_prevue,  // r.heure_debut doit être AVANT la fin de la nouvelle
-            heure_debut,       // r.heure_fin_prevue doit être APRÈS le début de la nouvelle
+            heure_fin_prevue,
+            heure_debut,
             id_salle,
             allUsersIds
         ];
