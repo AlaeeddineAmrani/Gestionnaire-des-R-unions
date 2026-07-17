@@ -220,7 +220,7 @@ The application addresses key organizational challenges:
 <!-- Replace with actual screenshot -->
 ![User Management](./screenshots/user-management.png)
 
-**User fields:** Nom, Prénom, Email, Mot de passe (bcrypt-hashed), Rôle (Admin/User), Service
+**User fields:** Nom, Prénom, Email, Mot de passe (bcrypt-hashed), Service
 
 ---
 
