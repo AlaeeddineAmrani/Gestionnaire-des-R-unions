@@ -54,7 +54,7 @@
 
 ## 🔭 About The Project
 
-**Gestionnaire des Réunions** is a full-stack web application developed during an internship at **INE1** (Institut National d'Électricité et d'Électronique). It provides a complete meeting management solution for organizations, covering the entire lifecycle of a meeting — from scheduling and participant invitation to agenda tracking and report generation.
+**Gestionnaire des Réunions** is a full-stack web application developed during an internship at Commune de Berkane. It provides a complete meeting management solution for organizations, covering the entire lifecycle of a meeting — from scheduling and participant invitation to agenda tracking and report generation.
 
 The application addresses key organizational challenges:
 
@@ -84,16 +84,16 @@ The application addresses key organizational challenges:
 
 ```
 ┌─────────────────────────────────────────┐
-│          📅 Gestionnaire des Réunions    │
-│                                          │
+│          📅 Gestionnaire des Réunions   │
+│                                         │
 │     ┌──────────────────────────┐        │
 │     │  📧 Email                │        │
 │     └──────────────────────────┘        │
 │     ┌──────────────────────────┐        │
 │     │  🔒 Mot de passe         │        │
 │     └──────────────────────────┘        │
-│                                          │
-│         [ Se connecter ]                 │
+│                                         │
+│         [ Se connecter ]                │
 └─────────────────────────────────────────┘
 ```
 
@@ -103,7 +103,6 @@ The application addresses key organizational challenges:
 
 > *The admin dashboard provides a central hub for managing all aspects of the application: users, rooms, services, divisions, and meetings.*
 
-<!-- Replace with actual screenshot -->
 ![Admin Dashboard](./screenshots/admin-dashboard.png)
 
 **Admin capabilities:**
@@ -118,7 +117,6 @@ The application addresses key organizational challenges:
 
 > *The user dashboard provides a personal view of meetings, upcoming events, and quick access to meeting creation.*
 
-<!-- Replace with actual screenshot -->
 ![User Dashboard](./screenshots/user-dashboard.png)
 
 **User capabilities:**
@@ -133,7 +131,6 @@ The application addresses key organizational challenges:
 
 > *A comprehensive list of all meetings with key information: title, date, time slots, assigned room, and PV status.*
 
-<!-- Replace with actual screenshot -->
 ![Reunion List](./screenshots/reunion-list.png)
 
 **List features:**
@@ -158,7 +155,6 @@ The application addresses key organizational challenges:
 
 > *A rich form for creating or editing meetings, with participant selection, time slot configuration, room assignment, agenda items management, and PV file upload.*
 
-<!-- Replace with actual screenshot -->
 ![Add Reunion](./screenshots/add-reunion.png)
 
 **Form features:**
@@ -177,7 +173,6 @@ The application addresses key organizational challenges:
 
 > *A detailed read-only view of a meeting, showing all associated data: participants with roles, agenda points with discussion status, and attached PV document.*
 
-<!-- Replace with actual screenshot -->
 ![View Reunion](./screenshots/view-reunion.png)
 
 **Detail sections:**
@@ -192,7 +187,6 @@ The application addresses key organizational challenges:
 
 > *A keyword-based search engine that queries agenda point descriptions across all meetings, allowing users to quickly find relevant discussions and navigate to their parent meeting.*
 
-<!-- Replace with actual screenshot -->
 ![Search Page](./screenshots/search-page.png)
 
 **Search capabilities:**
@@ -217,7 +211,6 @@ The application addresses key organizational challenges:
 
 > *Admin-only interface for managing users: create accounts, assign roles (Admin/User), link to a service, and manage credentials.*
 
-<!-- Replace with actual screenshot -->
 ![User Management](./screenshots/user-management.png)
 
 **User fields:** Nom, Prénom, Email, Mot de passe (bcrypt-hashed), Rôle (Admin/User), Service
@@ -228,7 +221,6 @@ The application addresses key organizational challenges:
 
 > *Admin-only CRUD interfaces for managing the organizational hierarchy (Divisions → Services) and meeting rooms (Salles) with capacity information.*
 
-<!-- Replace with actual screenshot -->
 ![Services & Divisions](./screenshots/services-divisions.png)
 
 **Organizational hierarchy:**
@@ -311,17 +303,17 @@ Example:
 ## 🏗️ Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────────┐
 │                    User Browser (Angular SPA)                     │
 │                                                                   │
 │  AuthComponent  AdminDashboard  UserDashboard  ReunionList  ...   │
 │       │              │               │              │             │
-│       └──────────────┴───────────────┴──────────────┘            │
+│       └──────────────┴───────────────┴──────────────┘             │
 │                              │                                    │
-│              ┌───────────────┴──────────────────┐                │
-│              │     Angular HttpClient (RxJS)     │                │
-│              │   + JWT Interceptor (Bearer)       │                │
-│              └───────────────┬──────────────────┘                │
+│              ┌───────────────┴──────────────────┐                 │
+│              │     Angular HttpClient (RxJS)    │                 │
+│              │   + JWT Interceptor (Bearer)     │                 │
+│              └───────────────┬──────────────────┘                 │
 └──────────────────────────────┼────────────────────────────────────┘
                                │
                     Authorization: Bearer <token>
@@ -335,17 +327,17 @@ Example:
                   │   │  authMiddleware   │ │ ← JWT verify
                   │   │  (req.user)       │ │
                   │   └────────┬──────────┘ │
-                  │            │             │
+                  │            │            │
                   │   ┌────────▼──────────┐ │
                   │   │   Controllers     │ │
                   │   │  (6 controllers)  │ │
                   │   └────────┬──────────┘ │
-                  │            │             │
+                  │            │            │
                   │   ┌────────▼──────────┐ │
                   │   │     Models        │ │
                   │   │  (6 models)       │ │
                   │   └────────┬──────────┘ │
-                  └────────────┼─────────────┘
+                  └────────────┼────────────┘
                                │
                                ▼
                     ┌──────────────────────┐
@@ -467,7 +459,7 @@ The application uses a **MySQL** relational database with **10 tables** organize
 │ nom, prenom    │                │
 │ email          │                │
 │ mot_de_passe   │    ┌───────────┴──────────┐
-│ role (enum)    │    │ convoquer_externe     │
+│ role (enum)    │    │ convoquer_externe    │
 │ id_service  FK │    │──────────────────────│
 └───────┬────────┘    │ id_reunion  FK (PK)  │
         │             │ id_personne FK (PK)  │
@@ -476,18 +468,18 @@ The application uses a **MySQL** relational database with **10 tables** organize
 ┌───────┴──────────────┐          │
 │ convoquer_interne    │          │
 │──────────────────────│          │
-│ id_utilisateur FK(PK)│    ┌─────┴──────────┐
+│ id_utilisateur FK(PK)│    ┌─────┴───────────┐
 │ id_reunion     FK(PK)│    │    reunion      │
-│ role_reunion (enum)  │───►│────────────────│
-│  ORGANISATEUR /      │    │ id_reunion  PK │
-│  PARTICIPANT         │    │ titre          │
-└──────────────────────┘    │ date_reunion   │
-                            │ heure_debut    │
+│ role_reunion (enum)  │───►│─────────────────│
+│  ORGANISATEUR /      │    │ id_reunion  PK  │
+│  PARTICIPANT         │    │ titre           │
+└──────────────────────┘    │ date_reunion    │
+                            │ heure_debut     │
                             │ heure_fin_prevue│
                             │ heure_fin_reelle│
-                            │ id_salle    FK │───► ┌──────────────┐
-                            │ pv_rapport BLOB│     │    salle     │
-                            └───────┬────────┘     │──────────────│
+                            │ id_salle    FK  │───►┌──────────────┐
+                            │ pv_rapport BLOB │    │    salle     │
+                            └───────┬─────────┘    │──────────────│
                                     │ 1:N          │ id_salle  PK │
                                     ▼              │ nom_salle UQ │
                             ┌────────────────┐     │ capacite     │
@@ -705,14 +697,14 @@ Please follow the [Conventional Commits](https://www.conventionalcommits.org/) s
   </tr>
 </table>
 
-**Internship at:** INE1 — Institut National d'Électricité et d'Électronique
+**Internship at:** Commune de Berkane 
 
 ---
 
 <div align="center">
 
-Made with ❤️ during an internship at **INE1**
+Made with ❤️ during an internship at **Commune de Berkane**
 
-*Année académique 2024/2025*
+*Année académique 2025/2026*
 
 </div>
