@@ -1,0 +1,12 @@
+# Environment variables (contains passwords & secrets)
+server/.env
+
+# Node modules
+node_modules/
+
+# Uploads (user-generated files)
+server/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
