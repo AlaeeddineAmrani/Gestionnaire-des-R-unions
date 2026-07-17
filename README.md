@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/INE1-Institut%20National%20d'%C3%89lectricit%C3%A9%20et%20d'%C3%89lectronique-003087?style=for-the-badge&logoColor=white" alt="INE1"/>
+<img src="https://img.shields.io/badge/INPT-Institut%20National%20des%20Postes%20et%20T%C3%A9l%C3%A9communications-003087?style=for-the-badge&logoColor=white" alt="INPT"/>
+<br/>
+<img src="https://img.shields.io/badge/INE1-Ing%C3%A9nieur%20d'%C3%89tat%201%C3%A8re%20Ann%C3%A9e-2E86C1?style=for-the-badge&logoColor=white" alt="INE1"/>
+<img src="https://img.shields.io/badge/Stage-Commune%20de%20Berkane-28B463?style=for-the-badge&logoColor=white" alt="Commune de Berkane"/>
 
 # 📅 Gestionnaire des Réunions
 
@@ -54,7 +57,7 @@
 
 ## 🔭 About The Project
 
-**Gestionnaire des Réunions** is a full-stack web application developed during an internship at **INE1** (Institut National d'Électricité et d'Électronique). It provides a complete meeting management solution for organizations, covering the entire lifecycle of a meeting — from scheduling and participant invitation to agenda tracking and report generation.
+**Gestionnaire des Réunions** is a full-stack web application developed during an **INE1** (Ingénieur d'État 1ère année) internship at the **Commune de Berkane**, as part of the curriculum at **INPT** (Institut National des Postes et Télécommunications), Rabat, Morocco. It provides a complete meeting management solution for the commune, covering the entire lifecycle of a meeting — from scheduling and participant invitation to agenda tracking and report generation.
 
 The application addresses key organizational challenges:
 
@@ -705,13 +708,15 @@ Please follow the [Conventional Commits](https://www.conventionalcommits.org/) s
   </tr>
 </table>
 
-**Internship at:** INE1 — Institut National d'Électricité et d'Électronique
+**School:** INPT — Institut National des Postes et Télécommunications, Rabat
+**Internship at:** Commune de Berkane
+**Level:** INE1 — Ingénieur d'État 1ère année
 
 ---
 
 <div align="center">
 
-Made with ❤️ during an internship at **INE1**
+Made with ❤️ during an INE1 internship at the **Commune de Berkane** — **INPT**, Rabat, Morocco
 
 *Année académique 2024/2025*
 
